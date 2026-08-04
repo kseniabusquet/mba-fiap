@@ -10,6 +10,7 @@
 ## Sumário
 
 - [Responsible AI](#responsible-ai)
+  - [Sumário](#sumário)
   - [1. Governança e Gestão de Dados — Fundamentos DAMA-DMBOK](#1-governança-e-gestão-de-dados--fundamentos-dama-dmbok)
     - [Diferenciação Estratégica: Gestão vs. Governança](#diferenciação-estratégica-gestão-vs-governança)
     - [As 6 Dimensões da Qualidade de Dados](#as-6-dimensões-da-qualidade-de-dados)
@@ -33,23 +34,51 @@
     - [Matriz de Priorização e Apetite de Risco](#matriz-de-priorização-e-apetite-de-risco)
       - [Matriz executiva simplificada](#matriz-executiva-simplificada)
     - [Alfabetização em IA — AI Literacy](#alfabetização-em-ia--ai-literacy)
-  - [6. Agentic AI e Projeto Final — Governança de Agentes](#agentic-ai-projeto-final)
-    - [6.1 Visão executiva](#visao-executiva)
-    - [6.2 Evolução da IA: preditiva, generativa e agêntica](#evolucao-da-ia)
-    - [6.3 Fundamentos e componentes dos agentes de IA](#fundamentos-componentes)
-    - [6.4 Sistemas multiagentes e padrões de comunicação](#multiagentes-comunicacao)
-    - [6.5 Classificação funcional de agentes](#classificacao-funcional)
-    - [6.6 Por que governar agentes é diferente](#governanca-diferente)
-    - [6.7 Riscos da IA agêntica: OWASP Top 10](#riscos-owasp)
-    - [6.8 Mitigação de riscos e defesa em profundidade](#mitigacao-riscos)
-    - [6.9 Supervisão humana: HITL, HOTL, HOOTL e Human-EX](#supervisao-humana)
-    - [6.10 Avaliação, observabilidade e ferramentas](#avaliacao-observabilidade)
-    - [6.11 As 3 zonas de governança no stack Microsoft](#zonas-governanca)
-    - [6.12 Projeto Final: Quantum Commerce](#projeto-final)
-    - [6.13 Roadmap executivo: 90, 180 e 365 dias](#roadmap)
-    - [6.14 Checklist de revisão para prova e projeto](#checklist)
-    - [6.15 Glossário essencial de IA Agêntica](#glossario)
-    - [6.16 Frase de fechamento](#frase-fechamento-agentic)
+  - [6. Agentic AI e Projeto Final — Governança de Agentes](#6-agentic-ai-e-projeto-final--governança-de-agentes)
+    - [6.1 Visão executiva](#61-visão-executiva)
+      - [Síntese dos pontos críticos](#síntese-dos-pontos-críticos)
+    - [6.2 Evolução da IA: preditiva, generativa e agêntica](#62-evolução-da-ia-preditiva-generativa-e-agêntica)
+      - [Diagrama de evolução](#diagrama-de-evolução)
+      - [Diferença essencial](#diferença-essencial)
+    - [6.3 Fundamentos e componentes dos agentes de IA](#63-fundamentos-e-componentes-dos-agentes-de-ia)
+      - [Os 5 componentes de um agente](#os-5-componentes-de-um-agente)
+      - [Arquitetura básica de um agente](#arquitetura-básica-de-um-agente)
+      - [Implicação prática](#implicação-prática)
+    - [6.4 Sistemas multiagentes e padrões de comunicação](#64-sistemas-multiagentes-e-padrões-de-comunicação)
+      - [Padrões arquiteturais](#padrões-arquiteturais)
+      - [Padrões emergentes de comunicação](#padrões-emergentes-de-comunicação)
+      - [Fluxo multiagente típico](#fluxo-multiagente-típico)
+    - [6.5 Classificação funcional de agentes](#65-classificação-funcional-de-agentes)
+      - [Matriz simplificada de autonomia](#matriz-simplificada-de-autonomia)
+    - [6.6 Por que governar agentes é diferente](#66-por-que-governar-agentes-é-diferente)
+      - [Propriedades que ampliam o risco](#propriedades-que-ampliam-o-risco)
+    - [6.7 Riscos da IA agêntica: OWASP Top 10](#67-riscos-da-ia-agêntica-owasp-top-10)
+      - [OWASP Top 10 for Agentic Applications](#owasp-top-10-for-agentic-applications)
+      - [Mapa de amplificação de risco](#mapa-de-amplificação-de-risco)
+    - [6.8 Mitigação de riscos e defesa em profundidade](#68-mitigação-de-riscos-e-defesa-em-profundidade)
+      - [6 camadas de defesa](#6-camadas-de-defesa)
+      - [Diagrama de defesa em profundidade](#diagrama-de-defesa-em-profundidade)
+      - [Mitigação ao longo do ciclo de vida](#mitigação-ao-longo-do-ciclo-de-vida)
+    - [6.9 Supervisão humana: HITL, HOTL, HOOTL e Human-EX](#69-supervisão-humana-hitl-hotl-hootl-e-human-ex)
+      - [Matriz de escolha](#matriz-de-escolha)
+    - [6.10 Avaliação, observabilidade e ferramentas](#610-avaliação-observabilidade-e-ferramentas)
+      - [4 pilares de observabilidade em agentes](#4-pilares-de-observabilidade-em-agentes)
+      - [Níveis de avaliação](#níveis-de-avaliação)
+      - [Ferramentas citadas](#ferramentas-citadas)
+    - [6.11 As 3 zonas de governança no stack Microsoft](#611-as-3-zonas-de-governança-no-stack-microsoft)
+      - [Interpretação executiva](#interpretação-executiva)
+    - [6.12 Projeto Final: Quantum Commerce](#612-projeto-final-quantum-commerce)
+      - [Papel da banca](#papel-da-banca)
+      - [Entregáveis obrigatórios](#entregáveis-obrigatórios)
+      - [Estrutura sugerida para o trabalho final](#estrutura-sugerida-para-o-trabalho-final)
+      - [Matriz básica para classificar casos de uso](#matriz-básica-para-classificar-casos-de-uso)
+    - [6.13 Roadmap executivo: 90, 180 e 365 dias](#613-roadmap-executivo-90-180-e-365-dias)
+      - [Indicadores recomendados](#indicadores-recomendados)
+    - [6.14 Checklist de revisão para prova e projeto](#614-checklist-de-revisão-para-prova-e-projeto)
+      - [Conceitos que precisam estar claros](#conceitos-que-precisam-estar-claros)
+      - [Perguntas prováveis de aplicação](#perguntas-prováveis-de-aplicação)
+    - [6.15 Glossário essencial](#615-glossário-essencial)
+    - [6.16 Frase de fechamento](#616-frase-de-fechamento)
   - [Síntese Executiva](#síntese-executiva)
   - [Glossário rápido](#glossário-rápido)
 
@@ -302,7 +331,7 @@ A **Aula 5** aprofunda a transição da Inteligência Artificial Generativa para
 
 Essa mudança altera o centro da governança. Em modelos tradicionais, o principal foco de controle está no **output**. Em agentes, o foco se desloca para a **ação**, porque o sistema pode produzir efeitos reais em processos, clientes, finanças, dados, sistemas operacionais e reputação corporativa.
 
-> **Tese central da aula:**  
+> **Tese central da aula:**
 > Governar IA Agêntica não é apenas controlar respostas. É controlar objetivos, permissões, ferramentas, identidade, memória, comunicação, autonomia e capacidade de intervenção humana.
 
 #### Síntese dos pontos críticos
@@ -351,7 +380,7 @@ flowchart LR
 
 #### Diferença essencial
 
-> **IA Generativa:** produz respostas.  
+> **IA Generativa:** produz respostas.
 > **IA Agêntica:** produz ações.
 
 Essa distinção é a base de todo o debate de risco, controle e governança da aula.
@@ -853,4 +882,3 @@ Em termos executivos, a disciplina conecta seis fundamentos:
 | **HOTL** | Human-on-the-Loop; humano monitora o agente e intervém em caso de anomalia. |
 | **HOOTL** | Human-out-of-the-Loop; execução autônoma com auditoria posterior. |
 | **Human-EX** | Human-in-the-Exception; humano é acionado apenas em exceções ou baixa confiança. |
-
