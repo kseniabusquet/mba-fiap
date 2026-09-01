@@ -8,5 +8,5 @@ Este repositório reúne os principais resumos e materiais do MBA da FIAP em AI 
 - [AI Business Strategy](ai_business_strategy/ai_business_strategy.md)
 - [AI Foundations and Learning Models](ai_foundation_and_learning_models/ai_foundations_learning_models.md)
 - [Responsible AI](responsible_ai/responsible_ai.md)
-- [Cloud & Cognitive Environments] (cloud_and_cognitive_environments/cloud_and_cognitive_environments.md)
-- [Data Architecture] (data_architecture/data_architecture.md)
+- [Cloud & Cognitive Environments](cloud_and_cognitive_environments/cloud_and_cognitive_environments.md)
+- [Data Architecture](data_architecture/data_architecture.md)
