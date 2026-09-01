@@ -45,6 +45,7 @@
     - [8. Vision: tags, OCR, object detection e Custom Vision](#8-vision-tags-ocr-object-detection-e-custom-vision)
     - [9. A matriz de decisão conceitual da aula](#9-a-matriz-de-decisão-conceitual-da-aula)
     - [10. Encerramento: destroy, a cinta de tools do agente e recap](#10-encerramento-destroy-a-cinta-de-tools-do-agente-e-recap)
+  - [11. Gravação do Lab da Aula 4](#11-gravação-do-lab-da-aula-4)
   - [Material complementar — Terraform](#material-complementar--terraform)
     - [Terraform: criando máquinas na Azure](#terraform-criando-máquinas-na-azure)
     - [Criando o primeiro ambiente com o Terraform (AWS)](#criando-o-primeiro-ambiente-com-o-terraform-aws)
@@ -440,6 +441,10 @@ Os quatro recados finais da aula: (1) a categoria de IA a usar depende do format
 Sobre a estrutura da entrega da Aula 4 (10% da nota, dentro do total de 5 entregas parciais + projeto final): Nível 1 obrigatório cobre ecossistema cognitivo, pricing, segurança (API key vs. Managed Identity) e capacidades de Vision; Nível 2 obrigatório cobre pipeline robusto de reviews (sumarização + PII + opinion mining), casos de uso de Speech e a comparação pronto vs. custom; Nível 3 é bônus (até +2 pontos extras) e inclui embeddings reais com Azure OpenAI, Custom Vision e sumarização via LLM. A aula termina com o teaser da Aula 5.
 
 ---
+
+## 11. Gravação do Lab da Aula 4
+
+[Link - YouTube](https://www.youtube.com/watch?v=BdLWnULU224)
 
 ## Material complementar — Terraform
 
