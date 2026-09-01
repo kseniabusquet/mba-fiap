@@ -45,6 +45,9 @@
     - [8. Vision: tags, OCR, object detection e Custom Vision](#8-vision-tags-ocr-object-detection-e-custom-vision)
     - [9. A matriz de decisão conceitual da aula](#9-a-matriz-de-decisão-conceitual-da-aula)
     - [10. Encerramento: destroy, a cinta de tools do agente e recap](#10-encerramento-destroy-a-cinta-de-tools-do-agente-e-recap)
+  - [Material complementar — Terraform](#material-complementar--terraform)
+    - [Terraform: criando máquinas na Azure](#terraform-criando-máquinas-na-azure)
+    - [Criando o primeiro ambiente com o Terraform (AWS)](#criando-o-primeiro-ambiente-com-o-terraform-aws)
 
 ---
 
@@ -436,3 +439,26 @@ Os quatro recados finais da aula: (1) a categoria de IA a usar depende do format
 
 Sobre a estrutura da entrega da Aula 4 (10% da nota, dentro do total de 5 entregas parciais + projeto final): Nível 1 obrigatório cobre ecossistema cognitivo, pricing, segurança (API key vs. Managed Identity) e capacidades de Vision; Nível 2 obrigatório cobre pipeline robusto de reviews (sumarização + PII + opinion mining), casos de uso de Speech e a comparação pronto vs. custom; Nível 3 é bônus (até +2 pontos extras) e inclui embeddings reais com Azure OpenAI, Custom Vision e sumarização via LLM. A aula termina com o teaser da Aula 5.
 
+---
+
+## Material complementar — Terraform
+
+### Terraform: criando máquinas na Azure
+
+O artigo parte de uma pergunta prática: por que não simplesmente criar a infraestrutura clicando no console da Azure? A resposta é a mesma reforçada ao longo do curso — provisionar pelo console não deixa documentação do que existe, dificulta alterações seguras e impede recriar o mesmo ambiente rapidamente em outro contexto (por exemplo, replicar produção para homologação). O Terraform resolve isso descrevendo a infraestrutura como código, com uma vantagem central sobre simplesmente automatizar tudo via script bash: **idempotência** — rodar o mesmo código várias vezes sempre leva ao mesmo resultado final, sem risco de duplicar recursos ou deixar o ambiente num estado inconsistente por causa de uma falha não tratada no meio do script.
+
+O artigo destaca uma particularidade da Azure frente a outros provedores: ao contrário da AWS, a Azure não entrega uma rede virtual padrão junto com a conta — é preciso criar explicitamente uma **VNet** (Virtual Network, equivalente ao conceito de VPC) para cada projeto, o que **isola** os recursos entre projetos diferentes e limita o raio de impacto caso um deles tenha um incidente de segurança. Os nomes dos recursos também mudam de provedor para provedor: uma máquina virtual que na AWS se chama `aws_instance` vira `azurerm_virtual_machine` no provider da Azure.
+
+Na parte prática, o artigo monta um exemplo mínimo de VM na Azure, resource a resource: a VM (`azurerm_virtual_machine`, com nome, tamanho de família — ex. `Standard_DS1_v2` — e a imagem do sistema operacional), o disco do sistema operacional, o perfil de acesso (usuário/senha ou, como alternativa mais segura sugerida no próprio artigo, autenticação por chave SSH em vez de senha), o **Resource Group** que agrupa e isola todos os recursos do projeto, a **rede virtual** com seu bloco de IPs privados e ao menos uma subnet dentro dela, e por fim a **interface de rede** que conecta a VM a essa subnet. O artigo reforça uma boa prática de segurança citada em todas as aulas do curso: nunca deixar usuário e senha (ou chave) hardcoded no arquivo de configuração versionado — o ideal é externalizar esses valores como variáveis, preenchidas fora do repositório. Ao final, `terraform apply` cria toda essa infraestrutura de uma vez e `terraform destroy` a remove por completo — o mesmo ciclo de vida (init → plan → apply → destroy) praticado nos laboratórios desta disciplina.
+
+Fonte: [Terraform: criando máquinas na Azure — Alura](https://www.alura.com.br/artigos/terraform-maquinas-na-azure)
+
+### Criando o primeiro ambiente com o Terraform (AWS)
+
+Este segundo artigo é mais introdutório e usa a AWS como provedor de exemplo, com o objetivo de criar três instâncias EC2 (o equivalente, na AWS, à VM da Azure) a partir de poucas linhas de código. O pré-requisito de ambiente é o mesmo em espírito do que se vê nos laboratórios da disciplina: ter a CLI do provedor de nuvem instalada e autenticada localmente (no caso, `aws configure`, informando Access Key, Secret Key, região padrão e formato de saída) e o binário do Terraform instalado.
+
+A estrutura mínima de um projeto Terraform é apresentada de forma didática: um arquivo `main.tf` que começa declarando o **provider** (qual nuvem e qual região usar) e, em seguida, um bloco `resource` por recurso desejado. No exemplo do artigo, um único bloco `resource "aws_instance"` cria as três instâncias de uma vez usando o atributo `count = 3`, com os nomes das máquinas gerados dinamicamente a partir do índice do contador (`alura0`, `alura1`, `alura2`) — uma forma compacta de criar múltiplos recursos semelhantes sem repetir o bloco inteiro três vezes. Os demais atributos do recurso definem a imagem de sistema operacional (AMI), o tipo de instância (`t2.micro`, dentro do free tier da AWS) e o nome do par de chaves SSH usado para acessar a máquina depois de criada.
+
+O artigo fecha reforçando o mesmo ciclo de comandos: `terraform init` (baixa os plugins do provider necessários), `terraform plan` (mostra o que será criado antes de executar, permitindo revisar) e `terraform apply` (efetivamente provisiona os recursos, pedindo confirmação explícita antes de prosseguir). É a mesma sequência praticada no laboratório da Aula 1 desta disciplina, aqui numa versão ainda mais enxuta e focada em um único tipo de recurso.
+
+Fonte: [Criando o primeiro ambiente com o Terraform — Alura](https://www.alura.com.br/artigos/criando-o-primeiro-ambiente-com-terraform)
