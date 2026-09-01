@@ -45,7 +45,7 @@
     - [8. Vision: tags, OCR, object detection e Custom Vision](#8-vision-tags-ocr-object-detection-e-custom-vision)
     - [9. A matriz de decisão conceitual da aula](#9-a-matriz-de-decisão-conceitual-da-aula)
     - [10. Encerramento: destroy, a cinta de tools do agente e recap](#10-encerramento-destroy-a-cinta-de-tools-do-agente-e-recap)
-  - [11. Gravação do Lab da Aula 4](#11-gravação-do-lab-da-aula-4)
+    - [11. Gravação do Lab da Aula 4](#11-gravação-do-lab-da-aula-4)
   - [Material complementar — Terraform](#material-complementar--terraform)
     - [Terraform: criando máquinas na Azure](#terraform-criando-máquinas-na-azure)
     - [Criando o primeiro ambiente com o Terraform (AWS)](#criando-o-primeiro-ambiente-com-o-terraform-aws)
@@ -442,7 +442,7 @@ Sobre a estrutura da entrega da Aula 4 (10% da nota, dentro do total de 5 entreg
 
 ---
 
-## 11. Gravação do Lab da Aula 4
+### 11. Gravação do Lab da Aula 4
 
 [Link - YouTube](https://www.youtube.com/watch?v=BdLWnULU224)
 
