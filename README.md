@@ -10,3 +10,4 @@ Este repositório reúne os principais resumos e materiais do MBA da FIAP em AI 
 - [Responsible AI](responsible_ai/responsible_ai.md)
 - [Cloud & Cognitive Environments](cloud_and_cognitive_environments/cloud_and_cognitive_environments.md)
 - [Data Architecture](data_architecture/data_architecture.md)
+- [Innovation with AI and Change Management](innovation_with_ai_and_change_management/innovation_with_ai_and_change_management.md)

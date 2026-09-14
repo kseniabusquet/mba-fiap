@@ -46,6 +46,33 @@
     - [9. A matriz de decisão conceitual da aula](#9-a-matriz-de-decisão-conceitual-da-aula)
     - [10. Encerramento: destroy, a cinta de tools do agente e recap](#10-encerramento-destroy-a-cinta-de-tools-do-agente-e-recap)
     - [11. Gravação do Lab da Aula 4](#11-gravação-do-lab-da-aula-4)
+  - [Aula 5 — Agentes de IA \& Microsoft Foundry](#aula-5--agentes-de-ia--microsoft-foundry)
+    - [1. Do loop ao agente: o laço e as seis camadas](#1-do-loop-ao-agente-o-laço-e-as-seis-camadas)
+    - [2. Chatbot, agente e harness: três nomes que o mercado confunde](#2-chatbot-agente-e-harness-três-nomes-que-o-mercado-confunde)
+    - [3. MCP vs. Skills: dois jeitos de estender um agente](#3-mcp-vs-skills-dois-jeitos-de-estender-um-agente)
+    - [4. Microsoft Foundry: a hierarquia Recurso → Projeto → Agente e os três tipos de agente](#4-microsoft-foundry-a-hierarquia-recurso--projeto--agente-e-os-três-tipos-de-agente)
+    - [5. Tech for Tech vs. Tech for Business: os quatro motivadores de uma plataforma cloud de agentes](#5-tech-for-tech-vs-tech-for-business-os-quatro-motivadores-de-uma-plataforma-cloud-de-agentes)
+    - [6. Os modelos disponíveis e suas portas de entrada no Foundry](#6-os-modelos-disponíveis-e-suas-portas-de-entrada-no-foundry)
+    - [7. Comparando modelos: qualidade, segurança, performance e custo](#7-comparando-modelos-qualidade-segurança-performance-e-custo)
+    - [8. Como o Foundry cobra: as oito métricas de billing e um exemplo de custo real](#8-como-o-foundry-cobra-as-oito-métricas-de-billing-e-um-exemplo-de-custo-real)
+    - [9. Orçamento não é cota: o freio de verdade](#9-orçamento-não-é-cota-o-freio-de-verdade)
+    - [10. Árvore de decisão: onde rodar o agente](#10-árvore-de-decisão-onde-rodar-o-agente)
+    - [11. Autonomia do agente: reversibilidade × verificabilidade](#11-autonomia-do-agente-reversibilidade--verificabilidade)
+    - [12. Laboratório: Deva, Deva2, Deva3 e o Deva contínuo](#12-laboratório-deva-deva2-deva3-e-o-deva-contínuo)
+  - [Aula 6 — FinOps](#aula-6--finops)
+    - [1. Do lab de agentes ao FinOps: fechando o ciclo com a Eva](#1-do-lab-de-agentes-ao-finops-fechando-o-ciclo-com-a-eva)
+    - [2. FinOps: os 3 pilares e por que "cortar custo" é a definição errada](#2-finops-os-3-pilares-e-por-que-cortar-custo-é-a-definição-errada)
+    - [3. Maturidade (Crawl/Walk/Run) e os três papéis de FinOps](#3-maturidade-crawlwalkrun-e-os-três-papéis-de-finops)
+    - [4. Tags: a base de tudo](#4-tags-a-base-de-tudo)
+    - [5. Lab 1: Cost Management, Advisor e Budget Alert na assinatura do aluno](#5-lab-1-cost-management-advisor-e-budget-alert-na-assinatura-do-aluno)
+    - [6. Anatomia de custo: o que compõe a fatura de um datacenter](#6-anatomia-de-custo-o-que-compõe-a-fatura-de-um-datacenter)
+    - [7. Otimização de compute e storage: Reserved, Spot, Right-sizing, lifecycle e o vilão do egress](#7-otimização-de-compute-e-storage-reserved-spot-right-sizing-lifecycle-e-o-vilão-do-egress)
+    - [8. Lab 2 + Exercício: TCO da Quantum Commerce no Pricing Calculator](#8-lab-2--exercício-tco-da-quantum-commerce-no-pricing-calculator)
+    - [9. FinOps em IA: o custo do agente é consequência do prompt, não da arquitetura](#9-finops-em-ia-o-custo-do-agente-é-consequência-do-prompt-não-da-arquitetura)
+    - [10. A unidade econômica do agente: custo por turno e token economics](#10-a-unidade-econômica-do-agente-custo-por-turno-e-token-economics)
+    - [11. As cinco alavancas de otimização e o equivalente das estratégias de desconto em IA](#11-as-cinco-alavancas-de-otimização-e-o-equivalente-das-estratégias-de-desconto-em-ia)
+    - [12. Lab 3: FinOps na Eva — da régua à decisão](#12-lab-3-finops-na-eva--da-régua-à-decisão)
+    - [13. Fechamento da disciplina: recap das 6 aulas](#13-fechamento-da-disciplina-recap-das-6-aulas)
   - [Material complementar — Terraform](#material-complementar--terraform)
     - [Terraform: criando máquinas na Azure](#terraform-criando-máquinas-na-azure)
     - [Criando o primeiro ambiente com o Terraform (AWS)](#criando-o-primeiro-ambiente-com-o-terraform-aws)
@@ -445,6 +472,230 @@ Sobre a estrutura da entrega da Aula 4 (10% da nota, dentro do total de 5 entreg
 ### 11. Gravação do Lab da Aula 4
 
 [Link - YouTube](https://www.youtube.com/watch?v=BdLWnULU224)
+
+---
+
+## Aula 5 — Agentes de IA & Microsoft Foundry
+
+A aula muda de patamar: até aqui o agente ganhou tools (catálogo, Speech, Language, Vision) penduradas num endpoint serverless, mas quem decidia a sequência de chamadas ainda era código determinístico. A partir daqui o tema é o agente propriamente dito — um LLM que decide sozinho quando e como usar cada tool — e a plataforma gerenciada da Azure para hospedar, versionar e cobrar por esse tipo de sistema: o **Microsoft Foundry** (renomeado de "Azure AI Foundry"). A aula alterna teoria de arquitetura de agentes com uma demonstração ao vivo do portal do Foundry, incluindo comparação de modelos no playground e uma estimativa de custo real de um agente de exemplo.
+
+### 1. Do loop ao agente: o laço e as seis camadas
+
+Um agente é definido pelo seu **loop**: Observar → Pensar → Agir → Observar o resultado, repetido até a tarefa terminar ou até um dos três freios de segurança interromper o laço — **máximo de voltas** (`max_voltas`, evita loop infinito), **orçamento de tokens** (corta antes que o custo escape) e **timeout** (evita que uma tarefa trave o sistema indefinidamente). Sem esses freios, um agente mal instruído pode entrar em um ciclo de chamadas que não termina sozinho, gastando tokens (e dinheiro) a cada volta.
+
+Em torno desse laço, o professor descreveu um agente como seis camadas empilhadas:
+
+| Camada | O que é | Exemplo prático |
+|---|---|---|
+| **Loop** | O ciclo Observe → Think → Act | O motor do agente |
+| **Contexto** | Instruções fixas de identidade e comportamento | `AGENTS.md` — com a regra prática de não passar de ~200 linhas, sob risco de o próprio contexto virar custo e ruído |
+| **Memória** | O que o agente lembra entre interações | `MEMORY.md` — perfil do usuário, preferências, fatos recorrentes |
+| **Ferramentas** | O que o agente pode fazer no mundo | MCP, Skills, tools nativas |
+| **Autonomia** | Onde e por quanto tempo o agente roda | Sessão local vs. hospedado persistente |
+| **Modelo** | O LLM que raciocina em cada volta do loop | GPT, Claude, DeepSeek, Gemini, Kimi |
+
+### 2. Chatbot, agente e harness: três nomes que o mercado confunde
+
+Um **chatbot** responde uma pergunta por vez, sem memória persistente de ações e sem capacidade de agir sobre o mundo além de gerar texto. Um **agente** tem o loop completo — observa, decide usar uma ferramenta, executa, observa o resultado e decide o próximo passo, tudo isso amarrado por contexto e memória persistente. Um **harness** é a camada de orquestração/infraestrutura que dá corpo ao agente — o "chassi" que gerencia sessão, ferramentas disponíveis, limites e execução (o próprio Claude Code, por exemplo, é um harness). A distinção importa na hora de escolher o que construir: nem todo problema de automação precisa de um agente completo — às vezes um chatbot ou uma function determinística resolve com menos custo e menos risco.
+
+### 3. MCP vs. Skills: dois jeitos de estender um agente
+
+Os dois padrões foram comparados como complementares, cada um resolvendo uma parte diferente do problema de "como um agente aprende a fazer algo novo":
+
+- **MCP (Model Context Protocol)** — criado pela Anthropic e doado à Agentic AI Foundation (sob a Linux Foundation) em 12/09/2025; a especificação de 28/07/2026 tornou o protocolo *stateless*. MCP define como um agente se conecta a **ferramentas e fontes de dados externas** de forma padronizada — um servidor MCP expõe funções que qualquer agente compatível pode chamar, sem que o agente precise conhecer os detalhes de implementação de cada API por trás.
+- **Skills** — especificação aberta (agentskills.io), baseada em **progressive disclosure**: um `SKILL.md` descreve, em linguagem natural, um procedimento ou conhecimento específico que o agente carrega sob demanda, só quando a tarefa exige. Skills resolvem o problema de instruir comportamento e procedimento (como fazer), enquanto MCP resolve o de conectividade e execução (com o que fazer).
+
+Na prática, um agente maduro combina os dois: MCP para acessar sistemas e dados, Skills para saber como agir sobre eles em um domínio específico.
+
+### 4. Microsoft Foundry: a hierarquia Recurso → Projeto → Agente e os três tipos de agente
+
+O Foundry organiza tudo em três níveis:
+
+1. **Recurso** — a unidade de região, cota e billing (equivalente à Storage Account ou Cognitive Services multi-service vistos nas aulas anteriores).
+2. **Projeto** — a unidade de custo e de controle de acesso dentro de um recurso; é onde os modelos são implantados (deployment) e onde o consumo é medido.
+3. **Agente** — a unidade funcional, de um dos três tipos:
+
+| Tipo | O que é | Código necessário | Quando usar |
+|---|---|---|---|
+| **Prompt** | Agente definido só por instrução + modelo + ferramentas configuradas no portal | Nenhum | Ponto de partida — prototipagem rápida, sem infraestrutura própria |
+| **Hosted** | Seu próprio código de agente rodando dentro de um container gerenciado pelo Foundry | Sim (seu código) | Quando a lógica do agente exige algo que o modo Prompt não cobre; custo cobrado por vCPU-hora + GiB-hora do container, além do consumo de tokens |
+| **Workflow** | Um agente que orquestra outros agentes (Prompt, Hosted ou Workflow) | Configuração de orquestração | Processos multi-etapa que combinam várias capacidades especializadas |
+
+### 5. Tech for Tech vs. Tech for Business: os quatro motivadores de uma plataforma cloud de agentes
+
+Uma pergunta recorrente em aula: por que não simplesmente chamar a API da OpenAI ou da Anthropic direto do código, sem passar pelo Foundry? A resposta separa duas visões: **"Tech for Tech"** — construir o agente pela elegância técnica da solução — de **"Tech for Business"** — construir considerando o que a empresa realmente precisa para colocar aquilo em produção com segurança. Quatro motivadores concretos justificam pagar a "taxa" de rodar um agente dentro de uma plataforma cloud gerenciada, em vez de bater direto na API do provedor de modelo:
+
+1. **Residência de dados** — garantir que dados sensíveis não saiam da região/jurisdição exigida (o mesmo tema de LGPD revisitado desde a Aula 2).
+2. **Identidade corporativa** — o agente herda RBAC e Managed Identity da organização, em vez de uma chave de API solta.
+3. **Sandbox de execução** — ambiente controlado e isolado para o agente rodar código ou acessar sistemas, sem expor a rede corporativa.
+4. **Plano de controle** — visibilidade e governança centralizada sobre todos os agentes da empresa (quem publicou, o que consome, quanto custa).
+
+### 6. Os modelos disponíveis e suas portas de entrada no Foundry
+
+Nem todo modelo entra no Foundry pela mesma porta, e isso afeta diretamente o billing:
+
+| Família | Porta de entrada | Implicação de billing |
+|---|---|---|
+| **OpenAI** (GPT-5.6 Sol/Terra/Luna) | Vendido diretamente pela Azure | SLA da Microsoft + aceita crédito (estudante, gratuito, CSP) |
+| **DeepSeek V4** | Vendido diretamente pela Azure | Mesmo tratamento do OpenAI — SLA + crédito |
+| **Anthropic Claude** | Parceiro via Marketplace | Cobrado em **CCU** (Claude Consumption Unit), que decrementa o MACC (compromisso de gasto Azure) — mas **não** aceita crédito de estudante, gratuito ou CSP |
+| **Moonshot Kimi** | Parceiro via Marketplace | Mesmo tratamento do Claude — cobrança via CCU |
+| **Google Gemini** | Fora do catálogo | Não disponível; só os pesos abertos do Gemma podem ser usados |
+
+Um caso real mostrado em aula: rodar o mesmo modelo DeepSeek via Foundry custa cerca de **4,5x mais** do que chamar a API do DeepSeek diretamente — o professor foi enfático que isso não é bug nem sobrepreço arbitrário, é o preço da infraestrutura gerenciada (Entra ID, RBAC, SLA, isolamento) empacotada junto.
+
+### 7. Comparando modelos: qualidade, segurança, performance e custo
+
+O playground do Foundry foi demonstrado ao vivo comparando GPT-5, Claude, Kimi e DeepSeek na mesma pergunta, ancorando a escolha de modelo em quatro dimensões, não apenas preço por token:
+
+1. **Qualidade** — acurácia da resposta para a tarefa específica.
+2. **Segurança / ASR** (Attack Success Rate) — quanto menor, melhor; mede o quão resistente o modelo é a jailbreak e prompt injection.
+3. **Performance** — latência P90 (não a média — o percentil 90 revela o pior caso comum).
+4. **Custo por execução** — não custo por token; o número que importa é quanto custa **resolver a tarefa**, já considerando quantos tokens de entrada e saída ela normalmente consome.
+
+A mensagem central: o modelo mais barato por token pode sair mais caro por execução, se precisar de mais iterações ou gerar respostas mais longas para chegar à mesma qualidade.
+
+### 8. Como o Foundry cobra: as oito métricas de billing e um exemplo de custo real
+
+O Foundry mede consumo em oito frentes, listadas do maior para o menor peso típico numa fatura:
+
+| Métrica | O que mede |
+|---|---|
+| Uso de tokens | ~98% de uma fatura típica |
+| vCPU/memória do agente Hosted | Container rodando código próprio |
+| Armazenamento de vector knowledge | US$ 0,10/GB-dia após 1 GB gratuito |
+| Sessões de code interpreter | Execução de código sandboxed |
+| Web grounding | ~US$ 35 por 1.000 transações de busca |
+| Application Insights | ~US$ 2,30/GB ingerido — **habilitado por padrão**, ponto de atenção porque gera custo mesmo sem ninguém pedir |
+
+Um exemplo de custo trabalhado em aula, para um agente fictício chamado **Deva2**: rodando no modelo GPT-5.6 Terra, a estimativa mensal ficou em torno de **US$ 109,66**; trocando para o modelo Luna (mais leve), a mesma carga caiu para cerca de **US$ 13,04/mês** — uma diferença de quase 9x só pela escolha do modelo, reforçando o ponto da seção anterior sobre custo por execução.
+
+### 9. Orçamento não é cota: o freio de verdade
+
+Um ponto de segurança financeira destacado com ênfase: o **orçamento** (budget) configurado no Foundry só **envia um alerta por e-mail** quando o gasto se aproxima ou ultrapassa o limite — ele não interrompe o consumo. Quem efetivamente limita o gasto é a **cota** (TPM — tokens por minuto — configurada por deployment): um teto técnico que passa a recusar novas requisições ao ser atingido. Confundir os dois é um erro comum e caro — configurar só o orçamento dá uma falsa sensação de proteção.
+
+### 10. Árvore de decisão: onde rodar o agente
+
+A escolha entre agente Prompt, Hosted, Workflow, ou simplesmente usar Container Apps/Functions (sem Foundry) segue uma lógica de complexidade crescente: se o comportamento cabe inteiramente em instrução + ferramentas configuráveis no portal, Prompt resolve sem esforço de engenharia; se a lógica exige código customizado que o modo Prompt não cobre, Hosted é o caminho, aceitando o custo adicional de vCPU/memória do container gerenciado; se a tarefa precisa orquestrar múltiplos agentes especializados em sequência ou paralelo, Workflow é o padrão certo; e quando o caso de uso é essencialmente uma function determinística sem necessidade de raciocínio de LLM, a resposta certa pode nem envolver o Foundry — Functions ou Container Apps "puros", como visto na Aula 3, seguem sendo mais baratos e mais simples.
+
+### 11. Autonomia do agente: reversibilidade × verificabilidade
+
+Para decidir quanta autonomia dar a uma ação de agente (executar sozinho vs. pedir aprovação humana), o professor propôs uma matriz de duas dimensões: **reversibilidade** da ação (é fácil desfazer se der errado?) e **verificabilidade** do resultado (dá para confirmar automaticamente se a ação teve o efeito esperado?). Ações reversíveis e verificáveis podem ser totalmente autônomas; ações irreversíveis e difíceis de verificar (ex.: enviar um pagamento, deletar um recurso de produção) exigem aprovação humana explícita antes de executar — o mesmo princípio de menor privilégio e "Delete > Stop" que atravessa a disciplina desde a Aula 1, agora aplicado à decisão de design de um agente.
+
+### 12. Laboratório: Deva, Deva2, Deva3 e o Deva contínuo
+
+A aula usa uma progressão de exemplos do próprio professor como fio condutor didático, mostrada ao longo de várias aulas do curso:
+
+- **Deva** (Aula 2) — os primeiros arquivos de contexto e memória de um agente simples.
+- **Deva2** (Aula 3) — o agente publicado numa plataforma, usado no exemplo de custo desta aula.
+- **Deva3** (Aula 5) — um agente com código customizado rodando em container, consumindo a API de Vision do Foundry para análise de imagem — um exemplo direto de agente Hosted.
+- **Deva contínuo** (Lab 2 desta aula) — o exemplo mais avançado: uma demonstração de continuidade e memória revisável, em que sugestões de atualização de memória passam primeiro por um arquivo de pendências (`MEMORIA-PENDENTE.md`), exigem aprovação humana antes de virar `MEMORY.md` definitivo, mantêm uma fila de exceções para casos não previstos, e expõem deliberadamente uma superfície de ferramentas restrita: a API subjacente tem 14 operações, mas a especificação OpenAPI do agente só expõe 5 — nenhuma delas capaz de auto-aprovar suas próprias mudanças. É o princípio de menor privilégio (Aula 1) e de reversibilidade/verificabilidade (seção anterior) aplicado na prática a um agente que precisa lembrar de coisas entre sessões sem virar um risco de segurança.
+
+---
+
+## Aula 6 — FinOps
+
+A última aula da disciplina muda de lente: depois de cinco aulas construindo arquitetura — cloud, dados, serverless, containers, serviços cognitivos e agentes — a pergunta que fecha o curso é econômica. A provocação de abertura resume o tema: *"a arquitetura mais bonita do mundo pode falir a empresa se o custo escapar do controle"*. FinOps é apresentado não como um adendo de fim de curso, mas como "a outra metade do trabalho" de quem projeta sistemas em nuvem.
+
+### 1. Do lab de agentes ao FinOps: fechando o ciclo com a Eva
+
+A aula começa retomando e concluindo o laboratório de agentes iniciado na Aula 5: os alunos baixam o projeto do agente **Eva** (um assistente pessoal com identidade, regras de resposta e uma função de exemplo para consultar datas), primeiro rodando localmente contra a API da OpenAI com uma chave pública fornecida pelo professor (`chave.zip`), depois migrando o mesmo agente para rodar via **Microsoft Foundry**, criando um projeto próprio no portal (`ai.azure.com`), fazendo o deploy de um modelo (GPT-4o ou GPT-5.4 mini, conforme disponibilidade) e trocando a autenticação por chave pública pelo modelo de identidade do **Entra ID** — o mesmo salto de maturidade de segurança (de chave hardcoded para identidade gerenciada) já visto nas Aulas 3 e 4, agora aplicado a um agente. Essa Eva publicada e instrumentada é o sistema real que o restante da aula usa como estudo de caso de FinOps aplicado a IA.
+
+### 2. FinOps: os 3 pilares e por que "cortar custo" é a definição errada
+
+Pela definição da FinOps Foundation, citada em aula, FinOps é uma **"disciplina cultural e prática que combina engenharia, finanças e negócios para maximizar valor de negócio em workloads de cloud"**. O ponto central: FinOps não é "ficar pão-duro" — gastar US$ 100 e gerar US$ 500 não é vitória se for uma oportunidade desperdiçada; gastar US$ 1.000 e gerar US$ 10.000 é melhor. FinOps mede o gasto para permitir decisão informada sobre onde investir, não para minimizar gasto por si só.
+
+O ciclo virtuoso tem três pilares, e a maioria das empresas nunca passa do primeiro:
+
+| Pilar | Foco | Ferramentas típicas |
+|---|---|---|
+| **1. Inform** | Visibilidade — quem gasta o quê, onde, quando | Cost Management, tags, dashboards |
+| **2. Optimize** | Ação — reduzir custo sem perder qualidade | Advisor, Reserved Instances, lifecycle policies |
+| **3. Operate** | Cultura — "every engineer is FinOps now" | KPIs, budgets, retrospectivas mensais |
+
+### 3. Maturidade (Crawl/Walk/Run) e os três papéis de FinOps
+
+Empresas evoluem em três estágios: **Crawl** (controle superficial — budget alerts e tags básicas, onde está a maioria das empresas), **Walk** (Reserved Instances, lifecycle policies e dashboards, empresas medianas) e **Run** (chargeback por time, retrospectivas mensais e um FinOps Engineer dedicado, empresas líderes). Três papéis dividem o trabalho: **cada engenheiro** (responsável pela arquitetura — toda decisão de design reflete em custo), o **Cloud Cost Analyst** (perfil analítico — relatórios, modelagem de custo, forecasting para a diretoria) e o **FinOps Engineer** (perfil consultivo — cost intelligence automatizada, dashboards, alertas, pipelines de custo, indicando melhorias).
+
+### 4. Tags: a base de tudo
+
+A cadeia lógica apresentada em aula: sem tag não há identificação; sem identificação não há alocação de custo; sem alocação de custo não há FinOps. Uma tag aplicada **na criação do recurso**, via Terraform, permite depois alocar custo por projeto, time, ambiente ou, no caso da disciplina, por aula — e o professor apontou que a turma já pratica isso desde a Aula 1, com tags como `aula = "3"`, `disciplina = "cloud-cognitive"`, `projeto = "quantum-commerce"` e `provisionado = "terraform"` nos arquivos `.tf`: FinOps básico, na prática, desde o primeiro laboratório do curso.
+
+### 5. Lab 1: Cost Management, Advisor e Budget Alert na assinatura do aluno
+
+O primeiro laboratório aplica o pilar Inform na própria assinatura Azure for Students de cada aluno: no portal, em **Cost Management → Cost analysis**, filtrando os últimos 30 dias com granularidade diária e agrupando por serviço, cada aluno identifica seus três maiores gastadores; depois repete o agrupamento por **Tag** (`aula`), revelando qual aula do curso consumiu mais crédito. Em seguida, o **Azure Advisor** (aba Cost) é consultado em busca de recomendações de otimização — tipicamente vazio para quem desprovisiona os recursos ao final de cada aula, o que é, em si, o aprendizado esperado. O laboratório fecha configurando um **budget alert** (nome, valor, período de reset mensal, condições de alerta em 50/80/100% e destinatário de e-mail), e uma discussão em grupo sobre quem já ultrapassou o crédito, o que fariam diferente, e como esse aprendizado se aplica à escala de uma empresa.
+
+### 6. Anatomia de custo: o que compõe a fatura de um datacenter
+
+Revisitando o tema de datacenter da Aula 1 sob a lente financeira, os custos de um datacenter se dividem em três blocos: **custos computacionais** (processador/memória dos servidores, armazenamento, tráfego de rede), **custos de infraestrutura** (energia, refrigeração, segurança física) e **custos de serviço** (plataformas, backups, licenças). Ao decidir o que usar na nuvem, as perguntas centrais viram: quais recursos o meu workload realmente vai consumir, quanto "extra" pago pela comodidade de administração serverless, e qual o ganho real de terceirizar essa administração.
+
+### 7. Otimização de compute e storage: Reserved, Spot, Right-sizing, lifecycle e o vilão do egress
+
+Revisitando o **lifecycle de storage** já visto na Aula 2 (Hot → Cool → Archive → delete), o ponto de FinOps é quantificar: mover blobs frios automaticamente entre tiers gera de 80% a 90% de economia em logs antigos, e em escala isso significa seis dígitos por ano — mas o Archive cobra uma **retrieval fee** para ler o dado de volta, então não serve para dados que ainda são acessados com frequência.
+
+No lado de compute, cinco estratégias de desconto foram comparadas:
+
+| Estratégia | Desconto | Risco | Quando usar |
+|---|---|---|---|
+| Pay-as-you-go | 0% | Nenhum | Dev/test imprevisível |
+| Reserved Instances | ~30–50% | Compromisso de 1–3 anos | Workload 24/7 estável |
+| Spot | ~60–90% | Pode ser interrompido | Batch, treino de ML |
+| Savings Plan | ~25–40% | Compromisso de gasto | Múltiplos serviços, mais flexível |
+| Right-sizing | Varia | Nenhum | Sempre — é o *low-hanging fruit* antes de assinar qualquer compromisso de 3 anos |
+
+Por fim, o **egress** foi descrito como "o vilão silencioso": tráfego entrando na nuvem é grátis, tráfego saindo é cobrado por gigabyte, variando por região — uma cobrança que costuma pegar times de surpresa. Mitigação: manter a mesma nuvem e região de sistemas, clientes e fornecedores existentes, reaproveitar cópias, processar os dados na própria região e extrair apenas resultados agregados.
+
+### 8. Lab 2 + Exercício: TCO da Quantum Commerce no Pricing Calculator
+
+O segundo laboratório — que vale como a **entrega final de FinOps** do projeto integrado (feito em grupo) — pede o cálculo do **TCO (Total Cost of Ownership)** mensal da arquitetura completa da Quantum Commerce em escala real de produção (não free tier), somando nove componentes no Azure Pricing Calculator: Blob Storage (10 TB, dividido entre Hot/Cool/Archive), Azure SQL Hyperscale, Cosmos DB, Azure AI Search Standard S1, Function App Premium EP1, Azure AI Services multi-service (Language + Speech + Vision em volume), Azure ML (workspace + endpoint 24/7), Application Insights e egress. Depois de somar o total mensal em dólar e converter para reais, os alunos identificam os três itens mais caros e propõem uma otimização com economia estimada para cada um (exemplos discutidos: trocar Sentiment Analysis por um LLM só se usado com inteligência, aplicar scale-to-zero num endpoint de ML que hoje roda 24/7, usar Azure Front Door em vez de CDN externa, ou voltar uma Function Premium para o plano Consumption se o cold start for aceitável). O exercício fecha comparando o cenário com Reserved Instances de 1 e 3 anos nos itens que rodam 24/7, e redigindo, em um parágrafo, como apresentar esses números ao CFO da empresa fictícia.
+
+### 9. FinOps em IA: o custo do agente é consequência do prompt, não da arquitetura
+
+O bloco final da aula muda a régua de novo: em infraestrutura tradicional, você paga por **capacidade provisionada** — uma VM custa o mesmo ociosa ou a 100% de uso, e otimizar é encaixar capacidade na demanda. Num agente de IA, você paga por **uso**, e o uso é decidido pelo próprio código do agente: cada linha do `agent.md` entra na conta de toda chamada, para sempre, porque o histórico de contexto volta inteiro a cada volta do loop. A frase que resume o bloco: em infraestrutura, o custo é consequência da arquitetura; num agente, o custo é consequência do prompt — "every engineer is FinOps now" fica literal aqui, porque quem escreve o system prompt está, na prática, escrevendo a fatura.
+
+Três fontes de número sobre o mesmo agente não batem entre si, e a divergência é esperada, não um defeito:
+
+| Fonte | Granularidade | Atraso | Serve para |
+|---|---|---|---|
+| Cost Management | Recurso/dia, por tag | Horas | Pagar e cobrar |
+| Métricas do Foundry | Deployment/minuto | Minutos | Entender consumo |
+| Application Insights | Por turno, em dólar estimado | 2 a 5 minutos | Decidir agora |
+
+Regra prática: para decidir no dia a dia, vale o número da própria telemetria; para faturar de verdade, vale o número do provedor.
+
+### 10. A unidade econômica do agente: custo por turno e token economics
+
+A métrica que falta em qualquer FinOps clássico, e que só o código do próprio agente sabe calcular, é o **custo por turno**: custo médio por interação × turnos por usuário por dia × usuários × 30 dias. A recomendação é ler o **p95**, não a média — a média é o que se paga num dia normal, o p95 é o que se paga quando o uso muda. Tecnicamente, isso é feito agrupando os logs do Application Insights por `operation_Id` (um turno = uma cadeia de chamadas com o mesmo identificador), somando o custo estimado de cada chamada de modelo dentro daquele turno.
+
+A alavanca mais invisível é o **histórico como custo**: cinco iterações de um loop carregando 3.000 tokens de histórico cada geram cerca de 15.000 tokens de entrada num único turno, porque o histórico completo — junto com `agent.md`, `memory.md` e a descrição de todas as ferramentas disponíveis — volta a cada nova volta do laço. A proporção entre tokens de entrada e de saída costuma ser de 20 para 1, e como entrada e saída têm preços diferentes, essa proporção é o que decide se vale mais a pena encurtar o prompt ou encurtar a resposta esperada. O parâmetro `EVA_MAX_ITERACOES`, apresentado inicialmente como proteção técnica contra loop infinito, é também, na prática, o teto de gasto de um único turno — e deve ser dimensionado com o p95 observado, não por chute.
+
+### 11. As cinco alavancas de otimização e o equivalente das estratégias de desconto em IA
+
+Da mais barata para a mais cara de aplicar, cinco alavancas de otimização de um agente foram apresentadas: **encurtar o prompt** (`agent.md`, `memory.md` e descrições de ferramentas entram em toda iteração — é o ajuste mais barato), **teto de iterações** (`EVA_MAX_ITERACOES` limitando o gasto máximo de um turno), **escolher o modelo certo** (right-sizing de IA — comparar antes/depois na mesma consulta), **scale-to-zero** (`min-replicas 0`, o contêiner do agente desaparece quando ninguém usa) e **cache de resposta** (token vindo de cache não consome capacidade paga). A única dessas cinco que o FinOps clássico de infraestrutura já ensinava é o scale-to-zero — as outras quatro nascem especificamente do prompt e do comportamento do agente.
+
+A tabela clássica de estratégias de desconto de compute (Aula 6, seção 7) tem um equivalente direto no mundo de modelos de IA:
+
+| Estratégia (infra) | Equivalente em IA | O que muda |
+|---|---|---|
+| Pay-as-you-go | Standard, pago por token | O modo padrão da Eva — sem compromisso, sem SLA de latência |
+| Reserved Instances | PTU + Azure Reservations | Capacidade dedicada, US$/PTU/hora; reserva de 1 mês ou 1 ano — mas reserva **não garante capacidade**: primeiro cria o deployment e confirma a capacidade, só então compra |
+| Spot | Batch assíncrono | Tarifa reduzida, serve para lote, não para chat interativo |
+| Right-sizing | Modelo e prompt menores | A alavanca de sempre, e a mais barata de aplicar |
+| — (sem equivalente em infra) | Prompt caching | Token que vem do cache não consome capacidade — não existe paralelo no mundo de infraestrutura tradicional |
+
+Um alerta prático: PTU é caro se ficar ocioso — para o volume de uma aula ou de um piloto, o modo Standard (pago por token) é o correto.
+
+### 12. Lab 3: FinOps na Eva — da régua à decisão
+
+O último laboratório do curso aplica Inform e Optimize diretamente na Eva publicada pelo aluno. Primeiro, no Cost Management, agrupando por tag (`projeto`, depois `aluno`, depois `Service name`) para descobrir se o custo predominante foi do modelo ou da observabilidade; depois, checando cobertura de marcação via `az resource list` filtrando recursos sem a tag `projeto` (qualquer resultado ali é custo sem dono). Em seguida, uma consulta KQL no Application Insights (`eva-appi → Monitoring → Logs`) calcula custo médio, p95 e número médio de iterações por turno — e um resultado zerado é esperado por design: os preços nascem em zero de propósito, porque um número inventado em painel de custo é pior do que nenhum painel. A partir desses dados, o laboratório pede a projeção do custo mensal (com a média e com o p95, para expor o risco), o cálculo de quanto custa por mês cada parágrafo do `agent.md` (tokens ≈ caracteres ÷ 4, multiplicado por iterações médias, turnos por mês e preço de entrada), e a configuração dos dois controles do pilar Operate: um budget alert no grupo de recursos em 50/80/100%, e um alerta de `TokenTransaction` por hora — lembrando que um agente em loop não derruba nada, só gasta.
+
+Na escala de maturidade Crawl/Walk/Run aplicada à própria Eva: **Crawl** (tags + budget alert) e **Walk** (dashboards + otimizações já aplicadas, como scale-to-zero e teto de iterações) estão completos; **Run** (chargeback + KPI + retrospectiva mensal) está pela metade — a tag `aluno` já permite chargeback e o custo por turno já é um KPI calculável, mas falta o ritual: alguém precisa abrir o painel todo mês e decidir algo a partir dele. É exatamente o ponto levantado no início da aula: a maioria das empresas para no Inform.
+
+### 13. Fechamento da disciplina: recap das 6 aulas
+
+A aula — e o curso — fecham com um resumo do que foi construído ao longo de 6 aulas e 5 entregas parciais + 1 entrega final: uma arquitetura cloud real para a Quantum Commerce, cobrindo fundamentos de nuvem, processamento serverless, cinco tools prontas para alimentar agentes de verdade, uma tool com Machine Learning, agentes de IA, e FinOps para fechar. As ferramentas praticadas ao longo do curso — Azure Cloud, Azure Machine Learning, Cloud Shell, Pricing Calculator, git, Terraform, Docker (sem build) e uma quantidade relevante de scripts shell — são apresentadas explicitamente não como exercício descartável de curso, mas como portfólio a ser levado para o resto do MBA e para a carreira.
+
+---
 
 ## Material complementar — Terraform
 

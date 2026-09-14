@@ -34,6 +34,39 @@
     - [16. Consultas no Cassandra e o ALLOW FILTERING](#16-consultas-no-cassandra-e-o-allow-filtering)
     - [17. Laboratório prático com Cassandra](#17-laboratório-prático-com-cassandra)
     - [18. Encerramento e próximos passos](#18-encerramento-e-próximos-passos)
+  - [Aula 3 — Bancos de Documentos (MongoDB) e Bancos de Grafos (Neo4j)](#aula-3--bancos-de-documentos-mongodb-e-bancos-de-grafos-neo4j)
+    - [1. Bancos de documentos: características e o modelo JSON](#1-bancos-de-documentos-características-e-o-modelo-json)
+    - [2. Estrutura do MongoDB: instância, banco, coleção e documento](#2-estrutura-do-mongodb-instância-banco-coleção-e-documento)
+    - [3. Particionamento, replicação e o Teorema de CAP no MongoDB](#3-particionamento-replicação-e-o-teorema-de-cap-no-mongodb)
+    - [4. Modelagem: embutir (embed) vs. referenciar](#4-modelagem-embutir-embed-vs-referenciar)
+    - [5. Quando usar e quando evitar o MongoDB](#5-quando-usar-e-quando-evitar-o-mongodb)
+    - [6. Laboratório prático: subindo um MongoDB e primeiros comandos](#6-laboratório-prático-subindo-um-mongodb-e-primeiros-comandos)
+    - [7. Estudo de caso em sala: remodelando a Mega Loja para o MongoDB](#7-estudo-de-caso-em-sala-remodelando-a-mega-loja-para-o-mongodb)
+    - [8. Origem dos bancos de grafos: teoria dos grafos e as pontes de Königsberg](#8-origem-dos-bancos-de-grafos-teoria-dos-grafos-e-as-pontes-de-königsberg)
+    - [9. Neo4j: nós, rótulos, propriedades e relacionamentos](#9-neo4j-nós-rótulos-propriedades-e-relacionamentos)
+    - [10. Características do Neo4j e sua classificação no Teorema de CAP](#10-características-do-neo4j-e-sua-classificação-no-teorema-de-cap)
+    - [11. Cypher: a linguagem de consulta do Neo4j](#11-cypher-a-linguagem-de-consulta-do-neo4j)
+    - [12. Aplicações de bancos de grafos](#12-aplicações-de-bancos-de-grafos)
+    - [13. Laboratório prático com Neo4j e o desafio de migração para grafos](#13-laboratório-prático-com-neo4j-e-o-desafio-de-migração-para-grafos)
+    - [14. Encerramento e transição para os bancos vetoriais](#14-encerramento-e-transição-para-os-bancos-vetoriais)
+  - [Aula 4 — Bancos Vetoriais para Agentes (Operação Q)](#aula-4--bancos-vetoriais-para-agentes-operação-q)
+    - [1. Contexto: da gestão de dados à gestão de conhecimento — o cenário Quantum Finance](#1-contexto-da-gestão-de-dados-à-gestão-de-conhecimento--o-cenário-quantum-finance)
+    - [2. Escalares, vetores e embeddings](#2-escalares-vetores-e-embeddings)
+    - [3. Regras de infraestrutura do embedding e o lugar do RAG](#3-regras-de-infraestrutura-do-embedding-e-o-lugar-do-rag)
+    - [4. Busca por similaridade: distância de cosseno e KNN](#4-busca-por-similaridade-distância-de-cosseno-e-knn)
+    - [5. A escada de maturidade de dados para IA](#5-a-escada-de-maturidade-de-dados-para-ia)
+    - [6. Anatomia de um banco vetorial e o pgvector](#6-anatomia-de-um-banco-vetorial-e-o-pgvector)
+    - [7. Chunking: como fatiar os documentos](#7-chunking-como-fatiar-os-documentos)
+    - [8. Modelagem do agente: tabela de conhecimento, tabela de memória e governança](#8-modelagem-do-agente-tabela-de-conhecimento-tabela-de-memória-e-governança)
+    - [9. Laboratório guiado: estruturando o banco da Operação Q](#9-laboratório-guiado-estruturando-o-banco-da-operação-q)
+    - [10. Segurança e isolamento: o vazamento de memória entre clientes](#10-segurança-e-isolamento-o-vazamento-de-memória-entre-clientes)
+    - [11. Busca vetorial em escala: recall, P95 e a necessidade de índices](#11-busca-vetorial-em-escala-recall-p95-e-a-necessidade-de-índices)
+    - [12. HNSW: estrutura, parâmetros e custo de memória](#12-hnsw-estrutura-parâmetros-e-custo-de-memória)
+    - [13. IVFFlat e quantização de vetores](#13-ivfflat-e-quantização-de-vetores)
+    - [14. Ecossistema de bancos vetoriais: FAISS, pgvector, Pinecone, Weaviate e Qdrant](#14-ecossistema-de-bancos-vetoriais-faiss-pgvector-pinecone-weaviate-e-qdrant)
+    - [15. Como escolher o índice e o banco certo](#15-como-escolher-o-índice-e-o-banco-certo)
+    - [16. Laboratório prático: dimensionando índices por SLA](#16-laboratório-prático-dimensionando-índices-por-sla)
+    - [17. Encerramento e entrega](#17-encerramento-e-entrega)
 
 ## Aula 1 — Introdução e Arquiteturas de Referência
 
@@ -355,3 +388,283 @@ Como prática opcional extra, o professor também disponibilizou um roteiro equi
 A entrega da aula reúne os dois exercícios (o laboratório SQL/relacional e a prática com Cassandra) em um único trabalho de sala, com prazo até a véspera da próxima aula — formato livre (Word, TXT, ZIP com os scripts), desde que traga os comandos utilizáveis e um racional mínimo do grupo sobre as decisões tomadas (não é necessário exportar a conversa completa com a IA). O professor sinalizou que um trabalho integrado maior, com mais tempo dedicado, será apresentado em uma aula futura.
 
 Um fechamento que resume bem o espírito da aula veio de um aluno que se descreveu como "100% relacional": levou um tempo para a lógica do Cassandra fazer sentido, mas assim que ficou claro que a criação de tabela é orientada ao relatório/extração que se quer responder — e não à entidade de negócio — as peças se encaixaram. O professor reforçou o ponto: o conceito importa mais do que a ferramenta específica, porque na prática cada um vai usar a ferramenta que tiver disponível. A próxima aula aprofunda **bancos de grafos**, com Neo4j.
+
+## Aula 3 — Bancos de Documentos (MongoDB) e Bancos de Grafos (Neo4j)
+
+Aula ministrada pelo Prof. Leandro Mendes, dando sequência ao mapa de bancos NoSQL aberto na Aula 2. Depois de aprofundar o modelo colunar com Cassandra, a turma avança para mais dois paradigmas que resolvem problemas de modelagem diferentes: **documentos** (MongoDB) e **grafos** (Neo4j). A aula reserva a segunda metade para dois laboratórios práticos, remodelando o mesmo cenário de inventário (`invent_mestre`/`transac_mestre`) usado no laboratório SQL da Aula 2 — primeiro para o modelo de documentos, depois para o modelo de grafos.
+
+### 1. Bancos de documentos: características e o modelo JSON
+
+O **banco de documentos** guarda cada registro como um documento autocontido, tipicamente em **JSON** (internamente, o MongoDB serializa em **BSON**, uma variante binária do JSON). Diferente do modelo relacional, onde o esquema é definido antes da inserção e é igual para toda a tabela, aqui cada documento pode ter uma estrutura própria — campos podem existir em um documento e não existir em outro da mesma coleção, sem que isso gere erro ou exija uma migração de schema.
+
+Essa flexibilidade tem uma implicação de armazenamento discutida em aula: como o documento só grava os campos que de fato possui, um atributo ausente não consome espaço nenhum — diferente do banco relacional, onde uma coluna opcional sem valor ainda ocupa espaço (ou ao menos overhead de metadado) em toda linha da tabela, esteja ela preenchida ou não. Em bases com muitos atributos opcionais e alta variação entre registros, isso se traduz em economia real de armazenamento.
+
+### 2. Estrutura do MongoDB: instância, banco, coleção e documento
+
+O MongoDB organiza o dado em quatro níveis hierárquicos: **instância** (o servidor/processo do MongoDB rodando), **banco de dados** (database, um namespace lógico dentro da instância), **coleção** (collection, o equivalente a uma tabela, mas sem schema fixo) e **documento** (o registro individual, em JSON/BSON). Cada documento recebe automaticamente um campo `_id` do tipo **ObjectId**, gerado pelo próprio MongoDB caso a aplicação não o informe explicitamente, garantindo unicidade sem que seja preciso implementar uma sequência ou UUID à parte.
+
+Um ponto que gerou dúvida em aula foi se a instância do MongoDB também gerencia partição geográfica entre regiões, como o Cassandra faz com seus data centers. O professor esclareceu que não: por padrão, um cluster MongoDB inteiro permanece em uma única região — ele não tem, nativamente, o mesmo conceito de replicação multirregião gerenciada pelo próprio banco que o Cassandra oferece via `NetworkTopologyStrategy`. Isso é relevante na hora de comparar os dois bancos para cenários de disponibilidade geográfica.
+
+### 3. Particionamento, replicação e o Teorema de CAP no MongoDB
+
+O MongoDB escala horizontalmente por **sharding** (particionamento): os dados de uma coleção são divididos entre múltiplos nós conforme uma chave de partição (shard key), com um particionamento **primário** (a divisão inicial dos dados entre os shards) e mecanismos de particionamento **secundário** para redistribuir e balancear os dados à medida que o cluster cresce. Cada shard, por sua vez, é replicado dentro de um **replica set**, garantindo tolerância a falha de nó.
+
+Dentro de um replica set, existe sempre um **nó primário** (que recebe as escritas) e um ou mais **nós secundários** (que replicam o dado do primário e podem atender leituras, dependendo da configuração). Quando o nó primário cai ou fica inacessível, o replica set realiza uma **eleição** entre os nós secundários para escolher o novo primário — um processo de votação que considera fatores como a atualidade dos metadados de cada nó (quão em dia sua réplica está), a capacidade de banda/configuração da máquina e o throughput que o nó consegue sustentar. Esse mecanismo de eleição é conceitualmente parecido com o esquema de votação/quórum do Cassandra, mas resolve um problema ligeiramente diferente: lá, o objetivo é decidir quem assume a réplica perdida em uma arquitetura peer-to-peer sem mestre; aqui, o objetivo é eleger um mestre único (o primário) em um modelo que tem, sim, um nó coordenador de escrita.
+
+Essa arquitetura mestre-réplica com propagação assíncrona coloca o MongoDB no modelo **BASE**, com **soft state** — assim como o Cassandra, o MongoDB tende a priorizar disponibilidade em detrimento de consistência imediata sob partição de rede, sendo classificado como **AP** no Teorema de CAP (a mesma classificação do Cassandra, ainda que os dois cheguem lá por caminhos arquiteturais bem diferentes — um peer-to-peer sem mestre, outro com eleição de primário).
+
+### 4. Modelagem: embutir (embed) vs. referenciar
+
+A decisão de modelagem mais importante no MongoDB é escolher, para cada relacionamento entre entidades, se ele deve ser **embutido** (embedded — o dado relacionado vive como um sub-documento ou uma sub-coleção dentro do documento pai) ou **referenciado** (reference — o dado relacionado vive em uma coleção própria e é ligado por um identificador, de forma parecida com uma chave estrangeira, mas sem integridade referencial garantida pelo banco). Como recomendação prática, a orientação da aula foi não ultrapassar cerca de **10 sub-coleções** embutidas dentro de um mesmo documento, sob risco de o documento crescer demais e prejudicar performance de leitura e escrita.
+
+Essa decisão apareceu de forma muito concreta no exercício prático da aula (seção 7), mas o critério geral discutido foi: **embuta** quando a cardinalidade do relacionamento é baixa a média e o dado embutido é sempre lido junto com o pai (não faz sentido separar); **referencie** quando o relacionamento é de alto volume (um-para-muitos com "muitos" grande, como um histórico de transações), quando o dado precisa ser consultado de forma independente do pai, ou quando o dado embutido mudaria com frequência e obrigaria reescrever muitos documentos pais a cada atualização (por exemplo, um preço de produto que varia por região — embuti-lo em cada cliente exigiria atualizar potencialmente milhões de documentos a cada reajuste). Um aluno resumiu bem essa lógica de decisão durante a aula, ao analisar se contas deveriam ficar embutidas dentro do documento de cliente: "eu armazenaria dentro do documento, um documento com outro documento dentro. Se você pensou em fazer join, você está no banco errado" — captando a ideia central de que, no MongoDB, a estrutura do documento deve antecipar a forma de leitura, e não empurrar a responsabilidade de juntar dados para uma consulta posterior (que o MongoDB, aliás, não resolve tão bem quanto um relacional).
+
+### 5. Quando usar e quando evitar o MongoDB
+
+**Casos de uso favoráveis:** arquiteturas de **persistência poliglota** (um exemplo trazido em aula: Redis para o carrinho de compras, MongoDB para o catálogo de produtos, e um banco relacional para as transações financeiras — cada banco resolvendo a parte do problema onde é mais forte); catálogos de produto e conteúdo variável (cada produto com atributos diferentes, sem forçar todos a caberem no mesmo schema); blogs e sistemas de CMS; gestão de configuração de aplicações; dados geoespaciais; redes sociais; e, de forma geral, sistemas com esquema pouco acoplado e em evolução constante — o exemplo citado foi o de startups em fase de descoberta de produto, onde o modelo de dados muda com frequência e a rigidez do schema relacional atrapalharia a velocidade de iteração.
+
+**Anti-casos de uso:** sistemas fortemente transacionais e com entidades fortemente acopladas (onde a integridade referencial entre múltiplas tabelas é central ao negócio); cenários que dependem de **joins complexos** entre muitas entidades (o MongoDB não tem a mesma capacidade nativa de junção que o relacional); e operações que exigem **transações complexas com múltiplas etapas** e garantias fortes de atomicidade entre coleções diferentes.
+
+Um tópico levantado por um aluno (Murilo) foi comparar bancos vetoriais nativos do MongoDB (MongoDB Atlas Vector Search) com o **pgvector** no Postgres para casos de RAG (Retrieval-Augmented Generation) de agentes de IA. A resposta do professor: a escolha depende muito da infraestrutura já existente e da maturidade do time — se a equipe já opera Postgres e o volume de dados vetoriais é o volume típico de um RAG de agente (não um caso de escala massiva), o pgvector tende a ser a opção mais simples, evitando introduzir mais uma peça de infraestrutura só para a capacidade vetorial. Esse tema retorna com muito mais profundidade na Aula 4.
+
+### 6. Laboratório prático: subindo um MongoDB e primeiros comandos
+
+O professor demonstrou duas formas de subir um ambiente MongoDB para o laboratório. A primeira, pelo **MongoDB Atlas** (o serviço gerenciado na nuvem), sofreu um contratempo ao vivo: o professor esqueceu de salvar a senha gerada automaticamente na criação do cluster e precisou apagar e recriar o ambiente do zero, se desculpando com a turma ("fui na pressa e esqueci") — um lembrete prático de que, mesmo em ambientes gerenciados, credenciais geradas automaticamente precisam ser salvas no momento da criação, porque normalmente não são recuperáveis depois.
+
+Como alternativa mais previsível, o professor demonstrou o setup via **Docker**: `docker pull mongo` para baixar a imagem oficial, `docker run -p 27017:27017 -d --name aula-mongo mongo` para subir o container publicando a porta padrão do MongoDB, `docker exec -it aula-mongo bash` para acessar o shell do container e `mongosh` para abrir o console interativo do MongoDB. A partir daí, os comandos básicos demonstrados foram: `db.createCollection("colecao1")` para criar uma coleção explicitamente, `show collections` para listar as coleções existentes, `db.colecao1.insert({name: "Leandro", profissao: "professor"})` para inserir um documento, e `db.colecao1.find()` para consultá-lo de volta. Um ponto interessante ilustrado ao vivo: uma coleção **não é materializada** no banco até que o primeiro documento seja inserido nela — criar a coleção explicitamente é opcional, já que o próprio insert cria a coleção automaticamente caso ela ainda não exista.
+
+### 7. Estudo de caso em sala: remodelando a Mega Loja para o MongoDB
+
+O exercício em grupo pediu que a turma continuasse o mesmo cenário de dados bancário/financeiro trabalhado na Aula 2 — cinco tabelas relacionais (clientes, contas, transações, produtos/ofertas, entre outras), geradas com seed 42 e cerca de 2.000 clientes — mas agora **remodelando** (não apenas traduzindo) essa estrutura para um schema de documentos MongoDB, usando IA generativa para acelerar a geração dos scripts, exatamente como no laboratório SQL da Aula 2.
+
+As decisões de modelagem discutidas nos grupos, e capturadas em detalhe durante os breakouts, ilustram bem os critérios da seção 4:
+
+- **Contas embutidas dentro do cliente**, como um array de sub-documentos — decisão consensual, já que a cardinalidade cliente→contas é baixa a média e as contas são normalmente lidas junto com os dados do cliente.
+- **Transações mantidas em coleção própria**, não embutidas — porque é uma relação um-para-muitos de alto volume. Um aluno (Renato) trouxe o raciocínio de custo explicitamente: "eu vou estar pagando por esse join... depende muito de como vai ser a utilização desse dado no dia a dia" — ao que o professor confirmou ("Exatamente") e acrescentou que, dependendo do caso de uso, as transações poderiam até ser reduzidas a um resumo consolidado por cliente em vez de manter o histórico completo embutido ou referenciado por inteiro.
+- **Cliente-produto/ofertas mantidos em coleção própria**, também não embutidos — para permitir que um mesmo cliente pertença simultaneamente a múltiplos clusters de marketing (o exemplo usado em sala: um cliente poderia estar simultaneamente nos clusters "incenso" e "Pokémon"), algo que ficaria difícil de representar de forma limpa se a associação estivesse embutida rigidamente em um dos dois lados.
+- **Produto referenciado por ID, não embutido** — porque preço e impostos variam por região; embutir o produto inteiro em cada documento de cliente exigiria atualizar todos os documentos afetados a cada mudança de preço, gerando, nas palavras discutidas em grupo, "gargalo e processamento desnecessário".
+
+Os dados gerados pela IA para o exercício foram validados contra os resultados do laboratório SQL da Aula 2 (a mesma base, mesma seed), com os grupos conferindo que os totais batiam (na casa de milhões de registros de transação e percentuais de participação por departamento), reforçando que a remodelagem preservava a mesma realidade de negócio, apenas mudando a forma de organizar o dado.
+
+### 8. Origem dos bancos de grafos: teoria dos grafos e as pontes de Königsberg
+
+A segunda metade da aula muda de paradigma para **bancos de grafos**. A origem teórica remonta à **teoria dos grafos**, formalizada pelo matemático **Leonhard Euler em 1736** ao resolver o problema das **sete pontes de Königsberg** — a pergunta de se era possível atravessar as sete pontes da cidade (hoje Kaliningrado) passando por cada uma exatamente uma vez e retornando ao ponto de partida. Euler provou que não, e ao formalizar o problema como um conjunto de pontos (nós) conectados por linhas (arestas), lançou as bases matemáticas que hoje sustentam os bancos de dados orientados a grafo.
+
+O **Neo4j** foi apresentado como o banco de grafos **nativo** e **open source** mais usado do mercado — "nativo" no sentido de que a estrutura de grafo não é uma camada sobre outro modelo de armazenamento, mas o próprio modelo de armazenamento e de processamento de consultas.
+
+### 9. Neo4j: nós, rótulos, propriedades e relacionamentos
+
+O modelo de dados do Neo4j é montado sobre quatro conceitos centrais:
+
+- **Nó (node)** — um ponto de dado, o equivalente a uma entidade ou registro. Pode ter zero ou mais rótulos e zero ou mais propriedades.
+- **Rótulo (label)** — uma etiqueta usada para agrupar nós por domínio (por exemplo, `:Pessoa`, `:Local`). Um rótulo não é um "balde" ou uma tabela rígida como no relacional — é apenas uma marcação que ajuda a filtrar e organizar consultas; um mesmo nó pode ter mais de um rótulo simultaneamente.
+- **Propriedade (property)** — um par chave-valor, no formato JSON-like, atribuído a um nó ou a um relacionamento (por exemplo, `{nome: "Leandro", cidade: "São Paulo"}`).
+- **Relacionamento (relationship)** — uma conexão direcionada entre dois nós, sempre com um tipo (por exemplo, `:MORA`). Um relacionamento pode ter suas próprias propriedades, um nó pode se relacionar consigo mesmo, e — diferente de nós, que podem ter múltiplos rótulos — um relacionamento no Neo4j tem sempre exatamente um tipo.
+
+### 10. Características do Neo4j e sua classificação no Teorema de CAP
+
+Diferente do MongoDB e do Cassandra, que operam no modelo BASE e são classificados como **AP**, o Neo4j oferece suporte **ACID completo**, sendo classificado como **CA** no Teorema de CAP — ele prioriza consistência e disponibilidade, assumindo (na configuração padrão) uma topologia menos distribuída geograficamente do que os bancos AP.
+
+Outras características levantadas em aula: o Neo4j é **schemaless/typeless** (não exige schema fixo antes da inserção); é um **motor de processamento de grafo nativo** (Native Graph Processing Engine — GPE), o que significa que percorrer relacionamentos é uma operação de custo constante por salto, independentemente do tamanho total do banco (diferente de simular relacionamentos via joins em um relacional, cujo custo cresce com o volume); suporta importação/exportação em **JSON e XLS**, além de uma **API REST** nativa; e, na edição gratuita/open source, não impõe restrições de uso ("free-for-all"). Em termos de escala, o professor citou o limite teórico de cerca de **34,4 bilhões** de nós e relacionamentos por banco, sem suporte nativo a **sharding de subgrafo** (diferente do MongoDB, o Neo4j open source não particiona um único grafo entre múltiplos nós). Clustering de alta disponibilidade (HA) só está disponível na edição **Enterprise** — a versão open source roda em um único nó.
+
+O conceito de **Knowledge Graph** (grafo de conhecimento) foi introduzido como a aplicação de grafos para representar não apenas dados brutos, mas relações semânticas entre conceitos — uma distinção que a aula deixou como gancho, com mais desenvolvimento nas aulas de Knowledge Management/Prompt Engineering do curso.
+
+### 11. Cypher: a linguagem de consulta do Neo4j
+
+O Neo4j usa o **Cypher** como linguagem declarativa de consulta, com uma sintaxe visual que imita a notação de grafo: parênteses `()` representam um nó, e um traço com colchetes e seta `-[]->` representa um relacionamento direcionado. Os três comandos centrais demonstrados foram `CREATE` (para criar nós e relacionamentos), `MATCH` (para buscar um padrão no grafo) e `RETURN` (para definir o que a consulta deve devolver).
+
+Na prática guiada, o professor criou um nó simples com `CREATE (:Pessoa {nome: "Leandro", cidade: "São Paulo"})` e, em seguida, `MATCH (n) RETURN n` para visualizá-lo — gerando confusão inicial na turma porque o nó exibido no grafo mostrava só um atributo por padrão (resolvido ao clicar no nó e configurar quais propriedades/cores exibir na visualização). Na sequência, o professor criou um padrão com relacionamento — `CREATE (:Pessoa {...})-[:MORA]->(:Local {tipo: "cidade", nome: "São Paulo"})` — e demonstrou a diferença entre `MATCH (n:Pessoa)-[r:MORA]->(l:Local) RETURN l` e `RETURN n, r, l`: o nó "Leandro" criado isoladamente na etapa anterior (sem o relacionamento `:MORA`) não aparece no resultado de uma consulta que exige esse padrão de relacionamento — só nós que efetivamente participam do padrão casado pelo `MATCH` são retornados.
+
+Sobre convenção de nomes de variável, a orientação foi usar `n`/`r` de forma genérica para nós e relacionamentos em consultas simples, e a primeira letra do rótulo (`p` para `:Pessoa`, `l` para `:Local`, por exemplo) em consultas mais complexas com múltiplos passos, para manter a legibilidade. Comandos administrativos também foram demonstrados: `SHOW DATABASES` para listar os bancos, `:use system` seguido de `SHOW USERS` para trocar de contexto e listar usuários, e `MATCH (n) RETURN count(n) AS nós` para contar o total de nós em um banco.
+
+### 12. Aplicações de bancos de grafos
+
+A aula levantou uma lista de aplicações reais de mercado para bancos de grafos: **redes sociais** e cálculo de grau de separação entre pessoas (o caso clássico do LinkedIn); **sistemas de recomendação** em e-commerce; **análise de churn** e **clusterização** de clientes; **Business Intelligence** relacional-avançado; e **otimização de rotas geoespaciais** — o exemplo citado por um aluno (Eduardo) e confirmado pelo professor foi o funcionamento de aplicativos como **Waze** e **Google Maps**, que modelam ruas e cruzamentos como grafos para calcular o menor caminho.
+
+Um aluno (Rafa) trouxe um exemplo real de sua própria empresa (chamada "Viva"), que constrói uma base de histórico de interações em grafo para dar contexto omnichannel ao atendimento — de forma que o histórico de um cliente em diferentes canais (chat, telefone, e-mail) fique conectado como um único grafo de relacionamento, em vez de fragmentado em silos por canal. Outro exemplo citado foi um projeto de soberania de dados do governo brasileiro (um LLM apelidado "Gaia"), treinado usando grafos de conhecimento em vez de pura vetorização, que teria apresentado desempenho superior a outros modelos em benchmarks como ENEM e FUVEST — um exemplo levantado em aula que, por vir de um relato de segunda mão da turma, vale registrar como uma referência a verificar, e não como um dado confirmado com uma fonte oficial.
+
+### 13. Laboratório prático com Neo4j e o desafio de migração para grafos
+
+Assim como no MongoDB, o professor demonstrou duas formas de subir o Neo4j: via **Docker** (`docker pull neo4j` seguido de um `docker run` publicando as duas portas do serviço — **7474** para a interface web e **7687** para o protocolo Bolt de conexão — com troca da senha padrão `neo4j`/`neo4j` no primeiro acesso) e via **Neo4j Aura**, o console gerenciado na nuvem (`console.neo4j.io/login`), que alguns alunos tiveram dificuldade de acessar por instabilidade de conexão, contornada usando modo anônimo do navegador ou trocando de browser.
+
+A interface do Neo4j Browser foi apresentada com um tour rápido: a barra lateral esquerda concentra informações do banco (nós, relacionamentos, propriedades), consultas Cypher salvas, histórico de comandos, documentação de referência e um ícone de configurações (incluindo limites de visualização de nós no grafo e alternância entre tema claro/escuro); o painel principal, à direita, é onde o Cypher é digitado e executado — reforçando que essa interação é puramente declarativa via Cypher, e não uma interface conversacional com um LLM. Os comandos `:play welcome` e `:clear`, além do tutorial embutido do "movie graph" (grafo de filmes de exemplo), foram usados para introduzir o ambiente.
+
+O desafio prático da segunda parte da aula pediu que a turma convertesse, com apoio de IA generativa, o mesmo modelo de inventário relacional da Aula 2 (`invent_mestre`/`transac_mestre`) para um modelo de grafo no Neo4j, avaliando criticamente a resposta da IA: as transações viraram nós ou viraram relacionamentos? O que aconteceu com os atributos que existiam nas tabelas originais? Que novos tipos de relacionamento — que não existiam explicitamente no modelo relacional — passaram a fazer sentido no grafo? Como tratar os itens órfãos que, no relacional, dependiam de uma chave estrangeira para existir? E como usar o comando **MERGE** do Cypher para evitar duplicar nós ao reexecutar a carga de dados mais de uma vez. Nos grupos, uma decisão recorrente foi transformar o **departamento** em um **nó** próprio (em vez de mantê-lo como uma simples propriedade de cada item), justamente pela cardinalidade — vários itens pertencem ao mesmo departamento, então tratá-lo como nó permite consultas de correlação que uma propriedade isolada não sustentaria, como "se um fornecedor parar de entregar, quais itens nos departamentos serão afetados?".
+
+Por conta do tempo consumido no laboratório de MongoDB, o professor optou por não cobrar a entrega do exercício de MongoDB, pedindo apenas a entrega do exercício de Neo4j — e decidiu também postergar o conteúdo de **bancos vetoriais**, originalmente previsto para o fim desta aula, para a aula seguinte, com mais tempo e profundidade dedicados ao tema.
+
+### 14. Encerramento e transição para os bancos vetoriais
+
+A aula fecha reconhecendo que o conteúdo de grafos foi denso e teve um início mais difícil (especialmente para quem vinha ainda absorvendo MongoDB na mesma sessão), mas destacando o valor do tema para o mercado. O professor sinalizou explicitamente que a próxima aula, dedicada a **bancos vetoriais**, vai complementar o que foi visto em grafos — os dois temas resolvem, de formas diferentes, o problema de dar mais significado e contexto ao dado além da simples busca por igualdade exata que o relacional oferece.
+
+## Aula 4 — Bancos Vetoriais para Agentes (Operação Q)
+
+Aula ministrada pelo Prof. Leandro Mendes, estruturada de forma diferente das anteriores: em vez de uma sequência linear de conceitos seguida de um laboratório único, a aula é organizada em torno de um cenário fictício contínuo — a **Operação Q** — que serve de fio condutor tanto para a teoria quanto para os dois laboratórios práticos da aula (antes e depois do intervalo). A aula tem quatro objetivos declarados: entender infraestrutura e modelagem de bancos de vetores, operação de runtime e segurança, engenharia de busca e índices, e tomada de decisão tecnológica por tipo de índice/configuração.
+
+### 1. Contexto: da gestão de dados à gestão de conhecimento — o cenário Quantum Finance
+
+O cenário de toda a aula é a **Quantum Finance**, um banco digital fictício em plena expansão, com **2 milhões de clientes** e **59 manuais internos** de política, tarifa e processo. A empresa opera o **Agente Q**, um agente automatizado que atende clientes, responde perguntas e analisa dados, apoiado por um **script avaliador determinístico** (sem juiz-LLM) que pontua, ao final do exercício, a qualidade do banco de vetores estruturado pelo aluno.
+
+Cinco personas de cliente fictícias foram definidas para ancorar os requisitos do exercício: **Marina**, que está economizando para comprar uma moto e não quer receber oferta de cartão; **Carlos**, com foco total em investimentos; **Ana**, que renegociou uma dívida e vai exercer o **direito ao esquecimento** da LGPD; **Bruno**, um cliente novo cujo histórico não pode se misturar com o de nenhum outro cliente; e **Fernanda**, com um atendimento urgente de sinistro de seguro. Essas personas definem, na prática, os requisitos não-funcionais do banco de vetores que a turma precisa construir: citação exclusiva de documentos oficiais vigentes (sem alucinação), isolamento estrito de memória por cliente, e exclusão física e definitiva de dados sob pedido de LGPD.
+
+O professor situou o banco vetorial no mapa da disciplina: depois de bancos relacionais (Aula 2), NoSQL de documentos e grafos (Aula 3), a Aula 4 marca a transição de olhar o banco puramente como armazenamento de dados para olhá-lo como **gestão de conhecimento** — a capacidade de buscar por significado semântico, não apenas por igualdade exata de valor.
+
+### 2. Escalares, vetores e embeddings
+
+Um **escalar** é um valor numérico único, sem direção — uma temperatura, uma tarifa, uma idade (um float, int ou similar). Um **vetor**, por sua vez, é uma lista estruturada de números que descreve algum elemento de forma multidimensional — por exemplo, um perfil de cliente pode ser vetorizado usando renda mensal, idade, produto, última compra e score como coordenadas.
+
+O **embedding** é o processo — realizado por um modelo de rede neural específico e "congelado" — que converte texto (ou outro dado não estruturado) nessas coordenadas numéricas. Textos com significados semelhantes são mapeados para coordenadas próximas no espaço vetorial, e é justamente esse cálculo de proximidade que sustenta a busca semântica. Um ponto reforçado repetidamente em aula: **embedding não é o banco de vetores** — é a função/biblioteca de rede neural que gera os vetores a partir de um texto; o banco de vetores é quem armazena, indexa e consulta esses vetores depois de gerados. É possível, inclusive, trabalhar apenas com embedding (sem banco de vetores algum) em cenários pequenos, guardando os vetores em memória — um primeiro degrau que a aula detalha na seção 5.
+
+Em resposta a perguntas da turma sobre como exatamente a rede neural decide os valores de cada coordenada, o professor foi direto: não existe um "valor ideal" ou um peso "melhor" — o que existe é que palavras e trechos em contextos semelhantes acabam gerando vetores próximos, porque é isso que permite ao modelo navegar sem ambiguidade e encontrar a resposta certa. A pontuação exata gerada por uma rede neural específica não é algo que se possa explicar termo a termo — só se pode observar e validar o comportamento agregado (proximidade semântica coerente).
+
+### 3. Regras de infraestrutura do embedding e o lugar do RAG
+
+Três regras de infraestrutura foram destacadas como críticas para qualquer projeto que use embeddings:
+
+1. **Mesmo modelo na ingestão e na consulta.** Se um texto foi vetorizado com um modelo/biblioteca específico, a consulta precisa usar exatamente o mesmo modelo — modelos diferentes geram espaços vetoriais diferentes, e comparar vetores de modelos distintos não produz um resultado coerente.
+2. **O número de dimensões do modelo define o tipo da coluna do banco.** No pgvector, por exemplo, a coluna é declarada como `vector(384)` se o modelo usado gera vetores de 384 dimensões — esse número é rígido e igual para toda a tabela.
+3. **Trocar de modelo exige reindexação completa.** Se o modelo de embedding muda, os vetores antigos deixam de ser comparáveis aos novos, então é preciso recalcular e reconstruir a base inteira.
+
+O laboratório da aula usa o modelo **`paraphrase-multilingual-MiniLM-L12-v2`**, com **384 dimensões**, rodando localmente via a biblioteca **Sentence Transformers**.
+
+Sobre o lugar do **RAG** (Retrieval-Augmented Generation) nessa cadeia: o embedding puro (guardado em memória ou em uma lista simples) é o primeiro degrau, útil para POCs e classificação de intenção em tempo real; o RAG é o passo seguinte, adicionando uma camada de recuperação mais estruturada sobre os documentos vetorizados antes de alimentar o modelo de linguagem; e o banco de vetores de produção (o foco desta aula) é o degrau mais avançado, sustentando volume, concorrência e governança. O professor deixou claro que embedding e RAG não são aprofundados tecnicamente nesta aula porque o curso tem uma aula dedicada a Knowledge Management/Prompt Engineering — aqui eles são citados apenas na medida do necessário para justificar o banco de vetores.
+
+Um esclarecimento à parte, motivado por uma pergunta em aula: ferramentas como **Elasticsearch** não fazem vetorização — elas são, na definição usada em sala, "um índice com esteroides": extremamente rápidas para busca de texto e termos em dados não estruturados, com forte paralelismo e tokenização, mas sem o cálculo matemático de proximidade semântica que caracteriza um banco vetorial.
+
+### 4. Busca por similaridade: distância de cosseno e KNN
+
+A busca em um banco de vetores não procura por igualdade exata, mas pela **região mais próxima** do espaço vetorial em relação ao vetor da pergunta — uma busca orientada por **similaridade de vizinhos**, tipicamente usando um modelo estilo **KNN** (K-Nearest Neighbors). A métrica mais usada é a **distância de cosseno**, que varia de **0** (mesma direção, vetores idênticos em orientação) a **2** (direções opostas), passando por **1** (vetores ortogonais, sem relação).
+
+Uma pergunta recorrente na aula foi a diferença conceitual entre a busca vetorial e a busca em grafos (tema da aula anterior): no grafo, a resposta vem de **distância e trajeto** — qual é o tipo de conexão explícita entre dois pontos de dado; no banco vetorial, a resposta vem de **proximidade espacial** calculada em tempo real na hora da consulta — não existe uma aresta pré-definida entre dois vetores, apenas a distância matemática entre suas coordenadas, recalculada a cada busca.
+
+Quando a busca é feita **sem índice** (busca linear), o banco compara o vetor da consulta contra cada vetor da tabela, um por um — funcional em volumes pequenos, mas inviável em escala. Quando o volume cresce, entram os **índices ANN** (Approximate Nearest Neighbor), que trocam uma pequena perda de precisão por um ganho de performance muito grande — tema desenvolvido em profundidade nas seções 11 a 13.
+
+### 5. A escada de maturidade de dados para IA
+
+A aula propõe uma "escada" de três degraus para pensar a maturidade de uma solução baseada em vetores:
+
+| Degrau | Descrição | Exemplos de uso |
+|---|---|---|
+| **1. Embedding em memória** | Vetorização pura via biblioteca/modelo, guardada em uma lista ou estrutura em memória (NumPy), sem banco dedicado — funciona até a casa de dezenas de milhares de vetores | POCs, classificação de intenção de chat em tempo real |
+| **2. RAG embarcado** | Um único processo local com um motor de busca semântica embarcado (Chroma ou FAISS local) | Assistentes sobre manuais, copilotos de código sobre um repositório local |
+| **3. Banco de produção** | Banco nativo de vetores ou extensão vetorial sobre um SGBD (pgvector e similares), com suporte a milhões de vetores, concorrência de leitura/escrita, governança, LGPD e RBAC | Ambientes multi-cliente, agentes de produção com múltiplos usuários simultâneos |
+
+O terceiro degrau é o foco do restante da aula: ambientes onde múltiplos clientes acessam agentes simultaneamente, exigindo governança de acesso, conformidade regulatória e capacidade de escala que os dois primeiros degraus não sustentam.
+
+### 6. Anatomia de um banco vetorial e o pgvector
+
+Uma analogia usada para explicar o funcionamento de um banco vetorial foi a de busca por localização: perguntar "quais restaurantes estão perto de mim" ao Google Maps retorna resultados dentro de um raio a partir da sua posição — o banco vetorial faz algo equivalente, buscando os pontos (vetores) mais próximos ao ponto da pergunta, dentro do "raio" (distância) configurado.
+
+Na estrutura de uma linha típica de um banco vetorial, além do ID e do vetor propriamente dito (por exemplo, com 384 dimensões), é comum incluir colunas de metadado (para filtro e contexto) e uma coluna com o caminho/nome do documento original, para permitir a citação da fonte. Uma ressalva importante: um banco vetorial **não é** puramente relacional (embora o pgvector traga as capacidades relacionais junto), e também **não é** um banco de grafos — não há aresta ou nó, apenas blocos de dado cuja vizinhança é calculada em runtime, na hora da consulta, com base na distância entre coordenadas.
+
+O **pgvector** é a extensão que traz capacidade vetorial para dentro do **Postgres**, unificando as vantagens de um banco relacional (ACID, joins, transações, backup) com armazenamento e indexação de vetores. O padrão de uso é: `CREATE EXTENSION vector;` para habilitar a extensão, seguido de um `CREATE TABLE` convencional com uma coluna adicional do tipo `vector(N)` (onde N é o número de dimensões do modelo de embedding usado); o `INSERT` inclui o vetor já calculado pela aplicação (o pgvector não gera embeddings sozinho — isso é responsabilidade da camada de aplicação); e a consulta usa `ORDER BY embedding <=> :vetor_consulta LIMIT k` para retornar os k vizinhos mais próximos, usando o operador de distância de cosseno.
+
+Sobre manutenção em produção — pergunta levantada por um aluno com experiência em Postgres, questionando se o pgvector precisa de uma rotina de "reorg" como um banco relacional tradicional — o professor confirmou que sim: o banco tende a perder performance conforme cresce, e é normal recalibrar o tipo de índice, aumentar o tamanho do chunk (se estiver gerando alucinação por perda de contexto) ou reconstruir o índice periodicamente. Diferente de um banco relacional, onde a degradação costuma aparecer como lentidão mensurável, em um banco vetorial mal calibrado o sintoma mais comum é justamente **alucinação** — respostas incorretas ou fora de contexto — o que torna a observabilidade mais desafiadora: uma prática sugerida foi manter um conjunto fixo de perguntas de referência (com resposta e citação já conhecidas) para monitorar continuamente se a qualidade das respostas do banco está variando ao longo do tempo.
+
+### 7. Chunking: como fatiar os documentos
+
+Um documento inteiro (um PDF, um DOC, uma apresentação) não se torna um único vetor — ele é fatiado em **chunks** (pedaços menores: por frase, por parágrafo, por caractere ou por quebra de linha), e cada chunk vira uma linha/vetor separado no banco. A escolha do critério de fatiamento (e do tamanho do chunk) tem impacto direto na qualidade das respostas: um chunk pequeno demais pode quebrar um contexto que se estende por duas frases ou duas páginas relacionadas, fazendo o modelo perder a conexão entre as partes e gerar **alucinação por referência quebrada** — um problema que o professor relatou já ter enfrentado em projeto real, resolvido apenas ao trocar o algoritmo/tamanho de chunk usado na geração dos vetores.
+
+O laboratório da aula usa o **método do kit** fornecido (`utils.chunk_paragrafo`), que fatia por parágrafo — cada quebra de linha em branco gera um novo chunk, prefixado com um cabeçalho de contexto (por exemplo, título do documento) antes de ser transformado em vetor.
+
+### 8. Modelagem do agente: tabela de conhecimento, tabela de memória e governança
+
+O padrão de modelagem central da aula divide o banco do agente em **duas tabelas com papéis distintos**:
+
+- **Tabela `conhecimento`** — carregada de forma **offline**, contendo manuais oficiais, políticas, FAQs e tabelas vigentes. O agente **apenas lê** essa tabela, tipicamente filtrando por `status = 'oficial'` para garantir que só documentos vigentes sejam citados.
+- **Tabela `memoria`** — de escrita e leitura em **tempo real**, onde o agente registra preferências, contexto de conversa e histórico por cliente, sempre filtrada por `cliente_id = :autenticado` para garantir isolamento.
+
+Três regras de governança foram destacadas como críticas em qualquer arquitetura de agente sobre banco vetorial:
+
+1. **O isolamento entre clientes deve ser garantido no código SQL da consulta, nunca delegado ao prompt do LLM.** Confiar que o modelo de linguagem "vai se lembrar" de filtrar por cliente é um risco de segurança real — o filtro precisa estar embutido na função/query, não na instrução textual dada ao agente.
+2. **A LGPD exige exclusão física, não lógica.** Um pedido de "direito ao esquecimento" não deve ser resolvido com um soft delete (marcar como excluído, mantendo o dado fisicamente); o fluxo correto envolve um passo de confirmação/validação seguido de exclusão física real, dentro de um processo de conformidade — não uma ação irreversível tomada unilateralmente pelo agente no calor da conversa.
+3. **Usar chaves estruturadas** conectando a tabela de memória à base de cadastro do cliente, em vez de depender apenas de texto livre, para reforçar a integridade e a auditabilidade do isolamento.
+
+### 9. Laboratório guiado: estruturando o banco da Operação Q
+
+O primeiro laboratório da aula usa o **Google Colab** para hospedar um Postgres com pgvector, carregando via um kit disponibilizado em um repositório público no GitHub: **59 documentos** fatiados em **244 chunks** de conhecimento oficial, e **24 conversas** históricas de clientes para a base de memória. O ponto de partida deliberadamente entregue pelo professor é um **esquema mínimo** — tabelas com apenas ID, texto e embedding, sem nenhuma coluna de metadado, filtro ou isolamento — para que a turma identifique e corrija as lacunas na prática.
+
+Rodando a consulta inicial ("quanto custa sacar?") sobre esse esquema mínimo, o resultado veio impreciso: em vez de responder diretamente o valor da tarifa vigente, o agente trouxe um trecho longo, incluindo referência a uma tabela de tarifas **arquivada** de um ano anterior — uma demonstração ao vivo de como a ausência de metadado (como uma coluna de `status` distinguindo documento vigente de arquivado) degrada a qualidade da resposta mesmo com a infraestrutura vetorial funcionando corretamente. A partir daí, a atividade guiada foi refinando a estrutura: adicionando colunas de metadado (título, área, tipo, status, data, empresa), habilitando filtro por `status = 'oficial'` na query, e testando como o parâmetro de **limite/K** (quantos vizinhos considerar na busca) afeta o resultado — um aluno (Daniel) levantou uma pergunta operacionalmente relevante: como saber, em produção, se K=3 é o valor certo antes que o cliente receba uma resposta ruim? A resposta do professor foi que essa calibração de K deve ser definida e validada **antes** de o agente ir ao ar, através de testes com perguntas de referência — não descoberta reativamente depois que o cliente já recebeu uma resposta inadequada.
+
+O restante do laboratório implementa a **função de memória do agente** (gravar interação, buscar memória, "esquecer" cliente), e conecta um agente real (usando **Ollama** para gestão local de modelo e o **Qwen 2.5** com 3 bilhões de parâmetros, dimensionado para caber no free tier do Colab) que interage com o banco de vetores através de ferramentas (tools) — uma delas, por exemplo, descrita como "busca política, tarifa e regras oficiais da Quantum Finance para qualquer pergunta sobre a empresa". Ao final, um **avaliador automático** (script determinístico, sem juiz-LLM) analisa o esquema criado, a ingestão, os metadados e a segurança, atribuindo uma pontuação de 0 a 100 — o esquema mínimo de partida, sem nenhum ajuste, pontua **35**.
+
+### 10. Segurança e isolamento: o vazamento de memória entre clientes
+
+A demonstração mais didática da aula sobre risco de segurança veio ao rodar a função de busca de memória **sem nenhum filtro de isolamento**: ao consultar a memória do cliente Bruno (cliente novo, cujo histórico não deveria se misturar com o de ninguém), o agente retornou também informações da cliente Marina (interessada em comprar uma moto) — porque a função `buscar_memoria`, embora recebesse o `cliente_id` como parâmetro, **não usava esse parâmetro no filtro da query SQL**, apenas na função de gravação. A correção discutida ao vivo foi simples de implementar (adicionar a cláusula `WHERE cliente_id = :cliente_id` na busca), mas o ponto pedagógico foi deliberado: mostrar que um agente pode parecer funcionalmente correto (respondendo perguntas, buscando memória) enquanto vaza dados de um cliente para outro, se a camada de isolamento não for auditada explicitamente no código da consulta — reforçando a regra de governança nº 1 da seção 8.
+
+### 11. Busca vetorial em escala: recall, P95 e a necessidade de índices
+
+Sem índice, uma busca vetorial funciona como entrar em uma biblioteca e vasculhar as prateleiras uma a uma; com índice **ANN**, funciona como usar o catálogo da biblioteca para ir direto ao corredor e à prateleira certos. Duas métricas centrais avaliam a qualidade de um índice:
+
+- **Recall** — a precisão do retorno: quantos dos vizinhos verdadeiramente mais próximos foram de fato encontrados pela busca aproximada. Valores próximos de 1 (ou de 90-99%, a depender da escala usada) indicam alta fidelidade em relação à busca exata.
+- **P95** — o valor de latência abaixo do qual 95% das consultas ficam. A aula explicou por que se usa P95 em vez de média: uma média pode esconder outliers graves (por exemplo, uma média de 20ms com alguns usuários esperando vários segundos) — o P95 revela melhor a experiência real da cauda mais lenta de usuários, sem cair no ruído estatístico de um P99 (mais sensível a outliers extremos) ou de uma média (que dilui o problema).
+
+À medida que o volume de vetores cresce, a busca linear (sem índice) deixa de ser viável tanto por recall degradado (efeito indireto do volume, se a modelagem de chunk/metadado não acompanhar) quanto, principalmente, por latência — motivando os índices ANN detalhados a seguir.
+
+### 12. HNSW: estrutura, parâmetros e custo de memória
+
+O **HNSW** (Hierarchical Navigable Small World — "mundo pequeno navegável hierárquico") é um índice baseado em **grafo**: cada vetor vira um nó, conectado aos vizinhos mais próximos, organizado em **camadas** — uma camada inferior mais densa (analogia usada em aula: andar a pé, com muitos nós próximos), uma camada intermediária mais esparsa (de táxi) e uma camada superior ainda mais esparsa (de avião), permitindo que a busca "salte" rapidamente pelas camadas superiores até refinar na camada inferior. É importante notar que essa estrutura interna de grafo **não transforma o pgvector em um banco de grafos** — é apenas o algoritmo de indexação usado internamente para localizar vetores mais rápido, sem qualquer relação com o Neo4j da Aula 3.
+
+Os parâmetros centrais do HNSW:
+
+| Parâmetro | Papel | Valor padrão / observado |
+|---|---|---|
+| **m** | Número máximo de conexões por nó — impacta o recall e o consumo de RAM | 16 |
+| **ef_construction** | Tamanho da varredura no momento da construção do índice — quanto maior, mais lento o build, mas melhor a qualidade final | 64 |
+| **ef_search** | Tamanho da lista de candidatos considerados em tempo de busca — ajustável em runtime, por sessão | 40 |
+
+O HNSW opera **inteiramente em memória RAM**, o que garante ganhos de performance muito expressivos, mas com custo de infraestrutura proporcional — a fórmula aproximada discutida em aula é **RAM ≈ N × (m × 2 × 8 bytes + d × 4 bytes)**, onde N é o número de vetores e d o número de dimensões. No benchmark medido em aula, sobre 100 mil vetores de 384 dimensões: o **build** do índice levou cerca de **83-99 segundos**, o índice ocupou aproximadamente **195 MB**, e a latência de consulta caiu de **~90ms** (busca sequencial/Seq Scan) para **~7ms** com HNSW — e em testes ao vivo durante o laboratório, o recall variou entre 0,67 e 0,84 dependendo do cenário/filtro, com P95 caindo de mais de 140ms para poucos milissegundos. Um aluno perguntou diretamente se aplicar HNSW é sempre a decisão certa: a resposta do professor foi que, na prática de projetos reais dos últimos anos, o ganho de qualidade e velocidade obtido ao sair de busca vetorial sem índice para HNSW indexado costuma ser "extremamente significativo" — mas o trade-off de memória precisa ser avaliado caso a caso (detalhado na seção 15).
+
+### 13. IVFFlat e quantização de vetores
+
+O **IVFFlat** (Inverted File Index) segue uma lógica bem diferente do HNSW: em vez de um grafo, ele usa **clusterização k-means**, calculando **centróides** que dividem o espaço vetorial em regiões (**lists**), e direcionando cada busca apenas às regiões mais prováveis de conter a resposta. Vantagens: **build muito mais rápido** (cerca de 3-3,5 segundos para 100 mil vetores, contra dezenas de segundos do HNSW) e **sem exigência de RAM dedicada** como o HNSW. Desvantagem central: o recall se degrada mais rapidamente sob **atualização intensa** de dados, exigindo reconstrução do índice com mais frequência do que o HNSW.
+
+O número de **lists** a configurar segue uma regra prática: dividir o número de linhas por 1.000 para bases de até 1 milhão de registros (acima disso, a regra muda para uma função de raiz quadrada do total de linhas). Em tempo de consulta, o parâmetro **probes** define quantos clusters serão de fato examinados na busca — mais probes aumentam a precisão às custas de mais latência.
+
+A **quantização** foi apresentada como uma técnica complementar de compressão de vetores, aplicável tanto isoladamente quanto combinada aos índices acima: o tipo **halfvec** (float16) reduz a RAM pela metade com recall praticamente idêntico ao float32 padrão; e a quantização **binária** (bit) pode reduzir o tamanho do vetor em até **32 vezes**, ao custo de um pré-filtro por distância de Hamming (`<~>`) seguido de um **re-ranking exato** sobre os candidatos reduzidos, para recuperar a precisão perdida na compressão agressiva. Uma analogia usada em aula para quantização: comprimir demais um espaço geográfico é como fundir bairros próximos (Pinheiros, Pompeia, Barra Funda) em uma única região maior — ganha-se velocidade de busca, mas perde-se granularidade fina de resposta.
+
+Sobre quando escolher HNSW versus IVFFlat, o critério discutido foi: HNSW tende a fazer mais sentido para bases menores e mais estáveis, como agentes especialistas em documentação interna de um domínio específico, onde a navegação estruturada em grafo compensa o custo de RAM; IVFFlat tende a ser preferível para volumes maiores e cenários de tempo real com atualização constante, onde o ganho por compressão pesa mais do que a degradação de recall sob escrita intensa.
+
+### 14. Ecossistema de bancos vetoriais: FAISS, pgvector, Pinecone, Weaviate e Qdrant
+
+A aula comparou cinco opções do ecossistema de busca vetorial:
+
+| Critério | FAISS | pgvector | Pinecone | Weaviate | Qdrant |
+|---|---|---|---|---|---|
+| **Natureza** | Biblioteca C++/Python (Meta) | Extensão do Postgres | SaaS gerenciado | SGBD nativo de grafo/vetor | SGBD nativo (Rust) |
+| **Filtro por metadado** | Manual, via código | SQL completo | Suportado nativamente | Suportado nativamente | Suportado, com payloads JSON flexíveis |
+| **Escrita/ACID** | Não se aplica (não é banco) | ACID completo | Eventual, conforme uso | Não é o foco central | Não é o foco central |
+| **Busca híbrida** | Não | Lógica manual (vetor + SQL) | Nativa | Nativa (vetor + BM25) | Via "sparse vectors" |
+| **Operação** | Requer engenharia própria | DBA tradicional | Sem infraestrutura própria | Requer operação de SGBD | Requer operação de SGBD |
+| **Consumo de RAM** | Alto | Alto com HNSW | Conforme uso (cobrança por consumo) | Alto | Mais otimizado (ambiente Rust) |
+
+O FAISS foi destacado como uma biblioteca (não um banco) — próxima de um embedding "cru", sem infraestrutura de persistência, ACID ou concorrência de escrita própria. O Pinecone foi descrito como a opção que exige menos esforço de infraestrutura, por ser inteiramente gerenciado. O Weaviate se diferencia por oferecer **busca híbrida nativa** (combinando busca vetorial com BM25, o algoritmo clássico de busca por palavra-chave). O Qdrant foi apontado como especialmente forte para cenários com filtros ricos sobre metadado estruturado em JSON, muito usado quando agentes/LLMs se conectam a sistemas web/mobile com payloads bem definidos.
+
+### 15. Como escolher o índice e o banco certo
+
+O método de decisão proposto segue quatro passos:
+
+1. **Definir o SLA mínimo** da aplicação: recall mínimo aceitável, P95 máximo tolerado, limite de RAM disponível e taxa de escrita esperada.
+2. **Estabelecer um gabarito** rodando a mesma consulta com busca exata (Seq Scan) para servir de referência de qualidade máxima possível.
+3. **Medir** as variações de índice (HNSW e IVFFlat, com diferentes parâmetros) contra esse gabarito.
+4. **Decidir** com base em custo de infraestrutura, performance e SLA de negócio — não apenas pela tecnologia mais nova ou mais badalada.
+
+Um aluno comparou a escolha entre HNSW e IVFFlat com a escolha de engine de armazenamento no MySQL (MyISAM vs. InnoDB) — uma decisão tomada na modelagem da tabela, e não algo parametrizado a cada chamada de código; o professor confirmou a analogia. Outra pergunta discutida foi sobre quantos índices são necessários por tabela: a resposta foi que o índice se aplica **por coluna de vetor**, não por partição de tempo ou de uso — mesmo em uma tabela particionada, o índice cobre a tabela vetorial inteira, e o fator relevante para decidir a frequência de reconstrução do índice é a velocidade de crescimento e atualização do dado, não a divisão em múltiplos índices paralelos.
+
+### 16. Laboratório prático: dimensionando índices por SLA
+
+O segundo laboratório da aula simula a evolução da Quantum Finance para produção: a base de memória cresce para **100 mil vetores**, com mais de **5 mil clientes ativos simulados**, atendendo **três departamentos com SLAs distintos**:
+
+| Cenário | Departamento | Recall mínimo | P95 máximo | Perfil de carga |
+|---|---|---|---|---|
+| **A** | Atendimento ao vivo | ≥ 0,95 | ≤ 20ms | Inserção intensiva contínua (chat em tempo real) |
+| **B** | Auditoria de compliance | ≥ 0,99 | Irrelevante (batch noturno) | Varredura em lote, índice ≤ 100MB |
+| **C** | Visão individual por cliente | ≥ 0,90 | ≤ 50ms | Consultas com filtros seletivos por cliente |
+
+O dataset de teste usa **100 mil memórias sintéticas** com 384 dimensões e um **gabarito de 200 consultas** com vizinhos exatos pré-calculados por busca linear, contra o qual o avaliador automático mede recall, P95, tempo de build e aderência ao SLA de cada cenário. Na prática guiada, o professor demonstrou a comparação entre busca sem índice (Seq Scan, recall = 1 mas P95 de 76-192ms) e HNSW configurado (recall caindo para a faixa de 0,67-0,84, mas P95 despencando para 4-5,5ms) — uma troca explícita de precisão marginal por performance, que a turma foi então orientada a repetir formulando hipóteses próprias, testando parâmetros como `ef_search` (via `SET`), `iterative_scan = relaxed_order` (que ajuda o índice a continuar variando ramificações quando há cláusulas de filtro restritivas) e o número de `probes` no IVFFlat, para decidir qual configuração melhor atende cada um dos três cenários de SLA.
+
+### 17. Encerramento e entrega
+
+A entrega da aula é composta por dois laboratórios (o de modelagem/segurança do banco e o de dimensionamento de índices por SLA), mas a nota é atribuída com base em **apenas um deles**, à escolha do aluno — quem concluir os dois pode entregar ambos para feedback qualitativo, mas apenas o escolhido conta para nota. Um desafio bônus opcional (combinando quantização binária com re-ranking e comparação de estratégias de particionamento) foi disponibilizado à parte, valendo até 10 pontos extras. O prazo de entrega foi fixado para o domingo anterior à aula seguinte, dando a turma duas semanas de folga.
+
+No fechamento, o professor resumiu os dois blocos da aula — infraestrutura/modelagem/segurança de banco vetorial no primeiro bloco, engenharia de índice e tomada de decisão técnica no segundo — e reforçou aplicações de mercado que conectam diretamente com o cenário da Quantum Finance: análise de histórico de crédito alinhada a cadastro em sistemas financeiros, agentes de conhecimento interno sobre documentação de processos, e catálogos/comportamento de cliente em e-commerce. A aula seguinte do curso (fora do escopo deste documento) foi anunciada como uma aula de **integração entre bancos**, aprofundando ainda mais a conexão entre bancos vetoriais e agentes de IA.
