@@ -67,6 +67,24 @@
     - [15. Como escolher o índice e o banco certo](#15-como-escolher-o-índice-e-o-banco-certo)
     - [16. Laboratório prático: dimensionando índices por SLA](#16-laboratório-prático-dimensionando-índices-por-sla)
     - [17. Encerramento e entrega](#17-encerramento-e-entrega)
+  - [Aula 5 — Integração de Dados para Agentes (Os Dutos do Q)](#aula-5--integração-de-dados-para-agentes-os-dutos-do-q)
+    - [1. Por que a fundação de dados sustenta os agentes: três falhas reais](#1-por-que-a-fundação-de-dados-sustenta-os-agentes-três-falhas-reais)
+    - [2. Os três paradigmas de ingestão: Batch, CDC e API](#2-os-três-paradigmas-de-ingestão-batch-cdc-e-api)
+    - [3. Batch: a janela de obsolescência](#3-batch-a-janela-de-obsolescência)
+    - [4. ETL vs. ELT: onde a transformação acontece](#4-etl-vs-elt-onde-a-transformação-acontece)
+    - [5. Bronze, Silver, Gold: a jornada do dado e o debate sobre governança (SOR, SOT, SPEC)](#5-bronze-silver-gold-a-jornada-do-dado-e-o-debate-sobre-governança-sor-sot-spec)
+    - [6. Metadados e contratos de dados](#6-metadados-e-contratos-de-dados)
+    - [7. Schema drift: o que fazer quando o esquema muda sem avisar](#7-schema-drift-o-que-fazer-quando-o-esquema-muda-sem-avisar)
+    - [8. Idempotência e determinismo](#8-idempotência-e-determinismo)
+    - [9. Time travel e auditoria de inferência](#9-time-travel-e-auditoria-de-inferência)
+    - [10. O ferramental: do laboratório à produção](#10-o-ferramental-do-laboratório-à-produção)
+    - [11. Agent 1, o Construtor, e o conceito de agent harness](#11-agent-1-o-construtor-e-o-conceito-de-agent-harness)
+    - [12. Missão 1: o duto batch (laboratório)](#12-missão-1-o-duto-batch-laboratório)
+    - [13. Cursor e efeito líquido](#13-cursor-e-efeito-líquido)
+    - [14. LGPD e o padrão outbox: o caso Marina](#14-lgpd-e-o-padrão-outbox-o-caso-marina)
+    - [15. Menor privilégio: o agente invoca, a view lê](#15-menor-privilégio-o-agente-invoca-a-view-lê)
+    - [16. Model Context Protocol (MCP) e os três agentes trabalhando juntos](#16-model-context-protocol-mcp-e-os-três-agentes-trabalhando-juntos)
+    - [17. Missão 2, o futuro dos pipelines (YAML como padrão) e encerramento da disciplina](#17-missão-2-o-futuro-dos-pipelines-yaml-como-padrão-e-encerramento-da-disciplina)
 
 ## Aula 1 — Introdução e Arquiteturas de Referência
 
@@ -668,3 +686,199 @@ O dataset de teste usa **100 mil memórias sintéticas** com 384 dimensões e um
 A entrega da aula é composta por dois laboratórios (o de modelagem/segurança do banco e o de dimensionamento de índices por SLA), mas a nota é atribuída com base em **apenas um deles**, à escolha do aluno — quem concluir os dois pode entregar ambos para feedback qualitativo, mas apenas o escolhido conta para nota. Um desafio bônus opcional (combinando quantização binária com re-ranking e comparação de estratégias de particionamento) foi disponibilizado à parte, valendo até 10 pontos extras. O prazo de entrega foi fixado para o domingo anterior à aula seguinte, dando a turma duas semanas de folga.
 
 No fechamento, o professor resumiu os dois blocos da aula — infraestrutura/modelagem/segurança de banco vetorial no primeiro bloco, engenharia de índice e tomada de decisão técnica no segundo — e reforçou aplicações de mercado que conectam diretamente com o cenário da Quantum Finance: análise de histórico de crédito alinhada a cadastro em sistemas financeiros, agentes de conhecimento interno sobre documentação de processos, e catálogos/comportamento de cliente em e-commerce. A aula seguinte do curso (fora do escopo deste documento) foi anunciada como uma aula de **integração entre bancos**, aprofundando ainda mais a conexão entre bancos vetoriais e agentes de IA.
+
+## Aula 5 — Integração de Dados para Agentes (Os Dutos do Q)
+
+Última aula da disciplina, com o tema batizado nos slides de **"Os Dutos do Q"**: se a Aula 4 resolveu como o agente da Operação Q armazena e busca conhecimento e memória em um banco vetorial, a Aula 5 resolve como o dado chega até esse banco de forma confiável, governada e auditável — o encanamento que sustenta tudo que foi construído até aqui. A aula fecha o curso com dois laboratórios (Missão 1 e Missão 2), ambos girando em torno de um pipeline de ingestão real, escrito por um agente de IA e auditado por outro.
+
+### 1. Por que a fundação de dados sustenta os agentes: três falhas reais
+
+A aula abre com uma provocação: um agente é só tão bom quanto o dado que ele recebe, e um agente que decide, recomenda ou responde a partir de dado errado, desatualizado ou indevidamente retido é um problema de arquitetura de dados escondido atrás de uma conversa fluente. Três falhas concretas foram usadas para ancorar essa ideia ao longo da aula:
+
+- **Dado parado (obsolescência silenciosa)** — um pipeline batch com janela de D+1 alimentando um agente que responde "em tempo real" sobre um saldo ou status que já mudou há horas, sem que ninguém tenha sido avisado do atraso.
+- **Exclusão ignorada** — um cliente pede para ser esquecido (LGPD) e o dado é removido da tabela principal, mas continua vivo em uma cópia, em um índice vetorial ou na memória de um agente — o caso da aluna fictícia **Marina**, retomado em detalhe na seção 14.
+- **Esquema que muda sem avisar** — uma fonte upstream adiciona, remove ou renomeia uma coluna, e o pipeline downstream ou quebra silenciosamente ou, pior, aceita o dado torto sem alarme, corrompendo tudo que é construído em cima dele.
+
+Essas três falhas foram usadas como fio condutor para justificar, seção a seção, cada peça de engenharia que a aula apresenta a seguir: ingestão correta, contrato de dados, tratamento de schema drift, idempotência/determinismo e o padrão de exclusão auditável.
+
+### 2. Os três paradigmas de ingestão: Batch, CDC e API
+
+A aula organiza toda ingestão de dados em três grandes paradigmas, cada um com um trade-off diferente entre custo, complexidade e atualidade do dado:
+
+| Paradigma | Como funciona | Latência típica | Complexidade | Quando usar |
+|---|---|---|---|---|
+| **Batch** | Extração agendada, em janelas (ex.: uma vez por dia) | Alta (horas a D+1) | Baixa | Relatórios, cargas históricas, dado que não muda de forma crítica hora a hora |
+| **CDC** (Change Data Capture) | Lê o log de transações do banco de origem e publica cada mudança como evento | Segundos | Alta | Sistemas transacionais críticos, onde o downstream precisa refletir o estado atual quase em tempo real |
+| **API** | Consumo via chamada HTTP, por *polling* (o consumidor pergunta periodicamente) ou *webhook* (a fonte avisa quando algo muda) | Minutos (polling) a segundos (webhook) | Média | Integração entre sistemas de terceiros ou serviços que não expõem acesso direto ao banco |
+
+O **CDC** foi explicado com o **Debezium** como implementação de referência: em vez de fazer `SELECT * FROM tabela` repetidamente (o que sobrecarrega o banco de origem e ainda assim pode perder mudanças entre uma consulta e outra), o Debezium lê diretamente o **log de transações** do banco — o Redo Log no Oracle, o WAL (Write-Ahead Log) no Postgres — e publica cada `INSERT`/`UPDATE`/`DELETE` como um evento em um tópico Kafka, incluindo o estado anterior e o novo estado da linha (*before/after image*). A vantagem central: o CDC captura a mudança no momento em que ela acontece no banco, sem tocar diretamente nas tabelas de produção com consultas pesadas repetidas.
+
+Para o paradigma de **API**, a turma discutiu a diferença prática entre **polling** (o consumidor pergunta "tem algo novo?" em intervalos fixos — simples de implementar, mas desperdiça chamadas quando não há novidade e pode atrasar a detecção de mudança) e **webhook** (a fonte empurra o evento assim que ele acontece — mais eficiente e quase em tempo real, mas exige que o consumidor exponha um endpoint disponível para receber a notificação). Dois exemplos reais trazidos pela turma ilustraram o contraste: o **QR Code do PIX**, em que o sistema de pagamentos notifica via webhook assim que a transação é confirmada (o cliente não fica consultando o status a cada segundo), contra cenários de mercado financeiro em que o consumo é feito por **polling** programado, porque a fonte de dado não oferece webhook ou porque o consumidor prefere controlar explicitamente a cadência de consulta.
+
+### 3. Batch: a janela de obsolescência
+
+Mesmo sendo o paradigma mais simples e mais barato de operar, o batch carrega um custo implícito que a aula chamou de **janela de obsolescência**: entre o momento em que o dado muda na origem e o momento em que ele é refletido no destino, existe uma janela de tempo (tipicamente **D+1**, ou seja, o dado de hoje só aparece amanhã) em que qualquer consumidor downstream — inclusive um agente de IA — está, tecnicamente, trabalhando com informação desatualizada. A decisão de usar batch não é um erro em si — para relatórios mensais ou cargas históricas é a opção certa, mais barata e mais simples — mas o arquiteto precisa deixar explícito para quem consome esse dado que ele carrega essa defasagem, principalmente quando esse consumidor é um agente que responde a um cliente como se estivesse vendo o presente.
+
+### 4. ETL vs. ELT: onde a transformação acontece
+
+A diferença entre **ETL** (Extract, Transform, Load) e **ELT** (Extract, Load, Transform) está na ordem em que a transformação acontece em relação à carga:
+
+| | ETL | ELT |
+|---|---|---|
+| **Ordem** | Extrai → transforma (fora do destino) → carrega já transformado | Extrai → carrega bruto → transforma dentro do próprio destino |
+| **Dado bruto sobrevive?** | Não necessariamente — o dado original pode não ser preservado após a transformação | Sim — o dado bruto fica persistido no destino, disponível para reprocessamento |
+| **Onde roda o processamento** | Em um motor de transformação externo, antes de chegar ao destino | No próprio motor de armazenamento/processamento do destino (ex.: warehouse ou lakehouse com poder computacional) |
+| **Custo** | Processamento pago fora do destino, geralmente em uma ferramenta de ETL dedicada | Processamento pago dentro do próprio destino, aproveitando o poder computacional que ele já tem |
+
+O ELT ganhou força com o Data Lakehouse justamente porque passou a ser viável (e mais barato) transformar dentro do mesmo motor que já guarda o dado, em vez de manter uma camada de transformação separada — e porque preservar o dado bruto do jeito que chegou é o que permite reprocessar do zero quando uma regra de transformação muda ou quando se descobre um erro. A aula trouxe um exemplo do mercado de **games/streaming** (citado a partir de uma apresentação em um evento de Big Data em Nova York, sobre a Activision e o Call of Duty) para mostrar o outro lado: em cenários de streaming de altíssimo volume, às vezes nem faz sentido falar estritamente em ETL ou ELT — a transformação acontece continuamente, em micro-lotes, e a fronteira entre "extrair", "carregar" e "transformar" se dilui na prática.
+
+### 5. Bronze, Silver, Gold: a jornada do dado e o debate sobre governança (SOR, SOT, SPEC)
+
+Retomando a arquitetura **Medallion** (já introduzida na Aula 1, dentro do Delta Lake), a aula detalhou o papel de cada camada dentro do fluxo de ingestão:
+
+| Camada | Conteúdo | Transformação aplicada |
+|---|---|---|
+| **Bronze** | Dado bruto, exatamente como chegou da fonte | Nenhuma — cópia fiel, inclusive de eventuais erros e inconsistências |
+| **Silver** | Dado limpo, com schema validado, deduplicado, tipado corretamente | Limpeza, padronização, validação de contrato |
+| **Gold** | Dado agregado e modelado para consumo direto | Agregações, junções, métricas de negócio já calculadas |
+
+A discussão em sala foi além do que os slides trazem: um aluno questionou se nomear as camadas por bronze/silver/gold (que descrevem **estágio de processamento**) não confunde o time com a ideia de **confiabilidade/governança** do dado — afinal, um dado pode estar tecnicamente na camada silver e ainda assim não ser a fonte confiável para uma decisão de negócio. Isso levou à discussão de três termos usados no mercado para tratar exatamente da confiabilidade, e não do estágio de processamento:
+
+- **SOR (System of Record)** — o sistema onde o dado nasce e é oficialmente registrado; a origem transacional.
+- **SOT (Source of Truth / Fonte da Verdade)** — o local (não necessariamente o SOR) que é designado como referência oficial para consulta, podendo já ser uma versão processada e curada do dado.
+- **SPEC** — usado em aula para se referir à especificação/contrato que define o formato esperado do dado, amarrando o que a fonte promete entregar ao que o consumidor espera receber.
+
+O ponto de fechamento da discussão: Medallion (bronze/silver/gold) descreve **onde o dado está no pipeline**; SOR/SOT descrevem **em quem confiar**; e um bom desenho de governança usa os dois vocabulários lado a lado, sem tratar "estar na camada gold" como sinônimo automático de "ser a fonte da verdade" — a validação de contrato (seção 6) é o que efetivamente garante essa confiança, não o nome da camada.
+
+### 6. Metadados e contratos de dados
+
+Um **Data Contract** foi apresentado como um acordo formal, versionado e legível por máquina (tipicamente escrito em **YAML**) entre quem produz um dado e quem o consome, especificando estrutura, tipos, regras de qualidade e SLA de atualização — a peça de engenharia que dá sustentação prática ao conceito de **Data as a Product** do Data Mesh (Aula 1). Um data contract elimina a ambiguidade do "descobri em produção que o campo mudou de tipo", trazendo a validação para antes da ingestão.
+
+A aula organizou os metadados descritos em um contrato em três categorias, cada uma com um dono diferente:
+
+| Tipo de metadado | O que descreve | Dono típico |
+|---|---|---|
+| **Técnico** | Schema, tipos de dado, formato do arquivo, chaves | Time de engenharia de dados |
+| **De negócio** | Significado do campo, regras de negócio, glossário, sensibilidade (PII) | Time de negócio / domínio dono do dado |
+| **Operacional** | SLA de atualização, frequência de carga, ownership, contato para incidentes | Time de operação/plataforma de dados |
+
+O contrato de dados usado no laboratório da aula (seção 12) é entregue como um YAML incompleto, com lacunas propositais que o time precisa preencher corretamente para que o pipeline funcione — a validação contra esse contrato é justamente o que decide se uma mudança de schema é aceita, rejeitada linha a linha, ou rejeita o arquivo inteiro (seção 7).
+
+### 7. Schema drift: o que fazer quando o esquema muda sem avisar
+
+**Schema drift** é quando a estrutura de um dado muda sem aviso prévio — uma coluna nova aparece, uma coluna esperada some, um tipo muda de inteiro para texto. A aula apresentou três estratégias possíveis de resposta, em ordem crescente de rigor:
+
+1. **Aceitar em silêncio** — o pipeline simplesmente ingere o dado com a mudança, sem alertar ninguém. Classificada em aula como a **pior opção**: o problema não desaparece, só fica invisível até explodir mais tarde, geralmente na forma de um relatório errado ou de um agente respondendo com base em um campo mal interpretado.
+2. **Rejeitar a linha** — o pipeline descarta apenas os registros que não respeitam o contrato, deixando passar o restante. Reduz o dano, mas ainda exige monitoramento para não perder dado silenciosamente linha a linha.
+3. **Rejeitar o arquivo inteiro** — qualquer desvio de schema barra a carga inteira daquele lote, forçando intervenção humana antes de prosseguir. Foi a estratégia adotada como padrão no kit de laboratório da aula, justamente por ser a mais conservadora: força visibilidade do problema antes que qualquer dado contaminado entre no lake.
+
+A escolha entre as três não é puramente técnica — depende de quão crítico é o dado e de qual é o custo de um falso negativo (deixar passar um dado ruim) versus o custo de um falso positivo (parar um pipeline inteiro por uma mudança inofensiva).
+
+### 8. Idempotência e determinismo
+
+Dois conceitos tratados como pré-requisito para qualquer pipeline confiável, especialmente quando ele pode ser reexecutado (por falha, por reprocessamento ou por um agente que decide rodar de novo):
+
+**Idempotência** é a propriedade de que executar o mesmo pipeline duas vezes sobre o mesmo dado produz o mesmo resultado final, sem duplicar registros. As técnicas discutidas:
+
+- **Chave natural** — usar um identificador de negócio estável (não um ID técnico gerado a cada execução) como chave de deduplicação.
+- **MERGE, não APPEND** — em vez de sempre inserir (`APPEND`), o pipeline deve fazer um `MERGE` (upsert): se o registro já existe pela chave natural, atualiza; se não existe, insere. Rodar o mesmo lote duas vezes com `APPEND` duplica dado; com `MERGE`, o resultado final é idêntico.
+- **Hash da linha** — calcular um hash do conteúdo da linha para detectar se ela de fato mudou, evitando reescrever (e gerar uma nova versão/timestamp) um registro que chegou de novo mas está idêntico ao que já existe.
+
+**Determinismo** é a garantia de que, dado o mesmo dado de entrada, o pipeline sempre produz a mesma saída. A aula listou o que costuma **quebrar** determinismo na prática:
+
+- Uso de `now()` ou `today()` dentro da lógica de transformação — o resultado passa a depender de *quando* o pipeline roda, não só do dado.
+- Depender da **ordem de leitura dos arquivos** quando essa ordem não é garantida pelo sistema de arquivos ou pela fonte.
+- IDs gerados pelo próprio destino (`auto increment`, UUID aleatório) em vez de vindos da origem ou derivados de forma determinística do conteúdo.
+- `LIMIT` sem `ORDER BY` explícito, ou qualquer consulta sem paginação/corte determinístico, que pode trazer conjuntos de linhas diferentes em execuções diferentes.
+
+Essa parte gerou boa discussão na turma, com alunos trazendo experiência real de **core banking** e de arquiteturas de **microsserviços**, relatando casos concretos em que um pipeline "funcionava sempre" até que a ordem de chegada de dois arquivos mudou, ou até que um `now()` escondido dentro de uma view intermediária começou a gerar resultados diferentes em reprocessamentos do mesmo dia.
+
+### 9. Time travel e auditoria de inferência
+
+Uma das vantagens do **Delta Lake** (e de formatos de tabela transacional equivalentes) retomada da Aula 1 é o **versionamento nativo**: cada operação de escrita (insert, update, delete, merge) gera uma nova versão da tabela, sem descartar as anteriores. Isso permite **time travel** — consultar a tabela exatamente como ela estava em uma versão ou um timestamp específico no passado.
+
+No contexto de agentes, essa capacidade ganha um uso adicional além da auditoria contábil clássica: **auditoria de inferência**. Se um agente tomou uma decisão ou deu uma resposta às 14h de uma terça-feira, o time travel permite reconstruir exatamente qual era o estado do dado (conhecimento e memória) que o agente enxergava naquele momento — essencial para investigar por que um agente respondeu algo específico, especialmente quando o dado subjacente muda com frequência.
+
+### 10. O ferramental: do laboratório à produção
+
+A aula fez questão de separar o ferramental usado no ambiente de laboratório do ferramental típico de produção, para que a turma não confundisse "o que dá para aprender em um Colab" com "o que uma arquitetura de produção real usa em escala":
+
+| | Laboratório (aula) | Produção (mercado) |
+|---|---|---|
+| **Motor de tabela transacional** | `delta-rs` (implementação Rust do Delta Lake, sem precisar de um cluster Spark) | Spark com Delta Lake nativo |
+| **Motor de consulta** | DuckDB (embutido, roda no próprio processo, sem infraestrutura) | Spark com Photon (motor de execução vetorizado) |
+| **Ambiente de execução** | Google Colab | Cluster gerenciado (Databricks, EMR, Dataproc) |
+| **Governança/catálogo** | Convenções manuais no laboratório | Unity Catalog (ou equivalente) |
+| **Ingestão incremental automatizada** | Simulada manualmente no laboratório | Auto Loader (ou equivalente) |
+
+A escolha de `delta-rs` e DuckDB para o laboratório foi justificada pela leveza: os mesmos conceitos de contrato, idempotência, schema drift e time travel se aplicam igualmente em ambos os ambientes, mas o laboratório usa ferramentas que rodam localmente, sem exigir cluster, para que o foco fique na lógica de arquitetura e não na configuração de infraestrutura.
+
+### 11. Agent 1, o Construtor, e o conceito de agent harness
+
+A aula introduziu o conceito de **agent harness** — a estrutura que envolve e disciplina um agente de IA para que ele não apenas "converse", mas execute uma tarefa de engenharia de forma confiável e auditável. Um harness bem desenhado tem quatro peças:
+
+1. **Superfície** — o conjunto de ferramentas e permissões que o agente de fato pode acionar (o que ele pode ler, escrever, chamar).
+2. **Guardrail** — as regras que impedem o agente de tomar uma ação fora do escopo permitido, mesmo que o modelo "queira" (por exemplo, escrever fora do schema do contrato).
+3. **Eval determinística** — testes automatizados, sem ambiguidade, que checam se a saída do agente atende a critérios objetivos (o pipeline gerado passa no teste de schema? é idempotente?).
+4. **Juiz por LLM** — para critérios mais qualitativos, que não se reduzem a um teste determinístico (a qualidade do código está boa? o pipeline está bem documentado?), um segundo modelo de linguagem avalia a saída do primeiro.
+
+Esse harness foi aplicado, no laboratório da aula, ao primeiro de três agentes do fluxo: o **Agente 1, "O Construtor"**, responsável por escrever o próprio pipeline de ingestão a partir do contrato de dados em YAML, usando um modelo pequeno e local, o **Qwen2.5-Coder 1.5B**, rodado dentro do próprio ambiente do laboratório (sem depender de uma API externa paga) — uma escolha deliberada para que a turma pudesse rodar o exercício de ponta a ponta sem custo de inferência.
+
+### 12. Missão 1: o duto batch (laboratório)
+
+O primeiro laboratório da aula, **Missão 1 — "O duto batch"**, coloca a turma para construir (com o Agente 1, o Construtor, escrevendo o código) um pipeline de ingestão batch a partir de um contrato de dados em YAML com **lacunas propositais** que precisam ser corretamente preenchidas antes que o pipeline funcione — testando, na prática, se o aluno entendeu contrato, schema drift, idempotência e determinismo o suficiente para revisar criticamente o que a IA gera, e não apenas aceitar o primeiro resultado.
+
+A pontuação da missão segue uma rubrica detalhada, somando até 100 pontos entre seis critérios (25/20/25/10/10/10), mais um componente especial de **"Caos"** que pode subtrair até 20 ou somar até 20 pontos dependendo de como o pipeline se comporta diante de um cenário de dado inesperado injetado propositalmente pelo avaliador automático. A pontuação final é convertida em uma classificação:
+
+| Faixa de pontuação | Classificação |
+|---|---|
+| ≥ 95 | **Ouro** |
+| ≥ 80 | **Prata** |
+| ≥ 60 | **Bronze** |
+| < 60 | Não atingiu o mínimo |
+
+Na discussão em sala sobre a dificuldade da missão, o aluno **Daniel** trouxe um feedback direto sobre o quanto o exercício exigia — sentindo o laboratório mais abstrato e mais distante do dia a dia do que os anteriores. O professor **Murilo** respondeu reforçando o papel esperado da turma dentro do exercício: **"a gente é só o arquiteto de dados aqui"** — o aluno não precisa escrever o pipeline linha a linha; precisa saber revisar, entender e corrigir o que o Agente 1 constrói, da mesma forma que um arquiteto de dados revisa criticamente o que uma IA generativa produz em um ambiente real de trabalho, eco direto da mesma mensagem já reforçada no laboratório SQL da Aula 2 ("o papel de vocês como arquiteto não muda: a IA acelera, mas não substitui").
+
+Um problema técnico à parte também surgiu durante a execução prática: dificuldades no upload do arquivo `.zip` do laboratório no Colab levaram a um pequeno desvio de aula para troubleshooting em conjunto, resolvido reorientando os alunos afetados sobre o caminho correto de upload dentro do ambiente.
+
+### 13. Cursor e efeito líquido
+
+Voltando ao paradigma de ingestão via **API** (seção 2), a aula detalhou o padrão de **cursor**: em vez de repuxar a base inteira a cada execução, o pipeline guarda um cursor (tipicamente uma data/timestamp da última execução bem-sucedida, o padrão **cursor-by-date**) e, na próxima execução, pede à API apenas os registros alterados desde esse cursor — reduzindo drasticamente o volume de dado transferido e processado em cada rodada.
+
+Esse padrão se conecta ao conceito de **efeito líquido**, discutido em conjunto com **SCD** (Slowly Changing Dimension, já mencionado na Aula 2 a propósito do histórico de preço): a diferença entre manter apenas um campo `updated_at` sobrescrito a cada mudança (perdendo o histórico intermediário) e manter uma nova versão a cada mudança relevante (preservando o histórico, ao custo de mais armazenamento e, quando o dado alimenta um banco vetorial, mais custo de reembedding a cada nova versão gerada) — uma decisão de arquitetura que precisa pesar o valor de manter histórico completo contra o custo de reprocessamento e de embedding repetido.
+
+### 14. LGPD e o padrão outbox: o caso Marina
+
+Retomando a primeira das três falhas da seção 1, a aula detalhou o **caso Marina**: uma cliente fictícia que exerce seu **direito de ser esquecida**, garantido pela LGPD, pedindo a exclusão de seus dados pessoais. O problema prático é que, em uma arquitetura com múltiplas camadas (Bronze/Silver/Gold), múltiplas cópias derivadas e, no caso de um agente, um banco vetorial com memória e conhecimento indexados, "apagar o dado" não é uma operação única — é uma operação que precisa se propagar de forma confiável e auditável por vários lugares.
+
+O padrão apresentado como solução foi o **outbox pattern**, adaptado ao fluxo de exclusão: o pedido de exclusão de Marina entra como um evento (**Pedido → Silver → Outbox → Fora do lake**), passando pela camada Silver para validação e enriquecimento, sendo então publicado em uma tabela/tópico de **outbox** dedicado, que outros consumidores (incluindo o índice vetorial do agente) leem para efetivamente remover ou anonimizar o dado correspondente em seus próprios domínios — garantindo que a exclusão se propague de forma rastreável, em vez de depender de cada sistema downstream "lembrar" de checar se algo precisa ser apagado.
+
+Um ponto de nuance discutido em aula: nem todo dado pode simplesmente sumir, mesmo diante de um pedido de exclusão — obrigações regulatórias (fiscais, contábeis, de prevenção a fraude) frequentemente exigem retenção por um prazo legal mínimo. A solução apresentada para esse conflito foi o padrão de **"legal DB"**: um armazenamento separado, de acesso restrito, isolado do restante da plataforma de dados (e, portanto, fora do alcance de qualquer agente ou pipeline de consumo geral), onde o dado que precisa ser retido por obrigação legal fica guardado apenas para fins de compliance, enquanto todo o resto da plataforma — incluindo a memória e o conhecimento do agente — trata Marina como efetivamente esquecida.
+
+### 15. Menor privilégio: o agente invoca, a view lê
+
+Conectando de volta à seção 10 da Aula 4 (o vazamento de memória entre clientes), a aula reforçou o princípio de **menor privilégio** como regra de ouro para qualquer agente com acesso a dado: o agente nunca deve ter acesso direto e irrestrito a SQL cru sobre as tabelas de produção. Em vez disso, o agente invoca **ferramentas (tools)** parametrizadas, que por sua vez leem através de **views** já restritas e filtradas (por exemplo, uma view que já embute o filtro `WHERE cliente_id = :id_do_agente_atual`), de forma que a superfície de acesso do agente seja definida pela arquitetura, não pela boa vontade do prompt.
+
+Esse desenho tem duas vantagens diretas: reduz drasticamente a chance de um agente vazar dado de um cliente para outro (o cenário discutido na Aula 4) e torna o acesso **auditável** — cada chamada de ferramenta fica registrada, com parâmetros explícitos, em vez de uma query SQL livre que poderia ser praticamente qualquer coisa.
+
+### 16. Model Context Protocol (MCP) e os três agentes trabalhando juntos
+
+O **Model Context Protocol (MCP)** foi apresentado como o padrão que formaliza essa relação entre agente e ferramenta, resolvendo o que a aula chamou de **problema N×M**: sem um protocolo comum, cada combinação de agente e sistema (banco de dados, API, arquivo) exige uma integração sob medida, e o número de integrações cresce multiplicativamente à medida que se somam mais agentes e mais sistemas. O MCP resolve isso definindo três primitivas padronizadas:
+
+- **Tools** — ações que o agente pode invocar (equivalente às views parametrizadas da seção 15).
+- **Resources** — dados que o agente pode ler como contexto.
+- **Prompts** — templates de instrução reutilizáveis que o servidor MCP expõe ao agente.
+
+Com esse protocolo como base, a aula fechou o desenho de arquitetura da Operação Q com uma orquestração de **três agentes** trabalhando em conjunto, cada um com uma responsabilidade isolada (reforçando, mais uma vez, o princípio de menor privilégio, agora aplicado entre agentes, não só entre agente e dado):
+
+1. **Agente 1 — "O Construtor"** (seção 11): escreve o pipeline de ingestão a partir do contrato YAML.
+2. **Agente 2 — "O Auditor"**: valida o pipeline gerado pelo Construtor contra o contrato de dados e as regras de qualidade, retornando um veredito simples de **PASS/FAIL** — funcionando como a "eval determinística" e o "guardrail" do harness aplicados automaticamente a cada pipeline novo, antes que ele chegue a tocar em dado real.
+3. **Agente 3 — "O Q"**: o agente final da disciplina, que efetivamente consome o dado já governado, limpo e validado pelos dois primeiros, para responder a perguntas e tomar decisões — fechando o ciclo iniciado na Aula 4.
+
+### 17. Missão 2, o futuro dos pipelines (YAML como padrão) e encerramento da disciplina
+
+O segundo laboratório da aula, **Missão 2 — "Serventia segura e governança"**, aplica de forma prática o padrão outbox do caso Marina (seção 14) e o princípio de menor privilégio (seção 15): a turma implementa o fluxo de exclusão de Marina de ponta a ponta e valida que o Agente 2 (o Auditor) de fato bloqueia qualquer tentativa de acesso ou resposta que ainda dependa do dado que deveria ter sido esquecido. A pontuação segue uma rubrica de quatro critérios somando 100 pontos (40/20/20/20), com o veredito do **Agente Auditor** avaliado à parte, também em 100 pontos — mas com uma regra de corte explícita: se a memória de Marina **sobreviver** em qualquer lugar que não seja o "legal DB", a pontuação da missão fica **travada em 40 pontos**, independentemente de qualquer outro critério ter sido cumprido corretamente — uma forma de deixar claro, na prática da nota, que a exclusão de dado pessoal não é um critério entre outros, é uma condição bloqueante.
+
+Fechando a disciplina, a aula trouxe um exemplo real de mercado, citado a partir de uma apresentação da **Cogna** em um evento da **Databricks**: a tendência observada é de pipelines cada vez mais **parametrizados inteiramente em YAML**, com a lógica de transformação genérica e reutilizável escondida atrás do motor de execução, e cada novo pipeline sendo, na prática, apenas um novo arquivo de configuração — não mais código novo escrito do zero. O professor reforçou essa tendência com sua própria experiência de mercado, incluindo passagens por empresas como a **Quinto Andar**, onde esse movimento de "pipeline como configuração, não como código" já está em curso.
+
+No encerramento, o professor recapitulou os cinco encontros da disciplina — do dado bruto e das arquiteturas de referência (Aula 1), passando pelos bancos relacionais e colunares (Aula 2), pelos bancos de documento e de grafo (Aula 3), pelos bancos vetoriais e a fundação de agentes (Aula 4), até os dutos de integração e governança que sustentam tudo isso (Aula 5) — como uma progressão única: da forma de guardar o dado até a forma de movê-lo com confiança para dentro de um agente de IA. A turma foi lembrada do prazo de entrega das duas missões da aula, fixado para o primeiro domingo de outubro, e convidada a preencher a pesquisa de avaliação da disciplina antes do encerramento oficial do curso.
